@@ -923,6 +923,63 @@ window.showSec = (sec) => {
   if (sec === 'batches') { populateBatchFilters(); loadBatches(); };
 };
 
+// ── DRAFT / SCHEDULE HELPER ──────────────────────────────────
+function draftScheduleHTML(idPrefix='ds') {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getMinutes() % 5 + 5);
+  const localDT = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  return `
+  <div class="p-3 rounded-xl space-y-2" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2)">
+    <p class="text-indigo-400 text-xs font-semibold tracking-wide">📅 PUBLISH SETTINGS</p>
+    <div class="flex rounded-xl overflow-hidden border border-slate-700" id="${idPrefix}Tabs">
+      <button type="button" onclick="setDraftMode('${idPrefix}','now')" id="${idPrefix}BtnNow" class="flex-1 py-2 text-xs font-semibold transition-colors" style="background:rgba(16,185,129,0.18);color:#10b981">⚡ Publish Now</button>
+      <button type="button" onclick="setDraftMode('${idPrefix}','schedule')" id="${idPrefix}BtnSchedule" class="flex-1 py-2 text-xs font-semibold text-slate-500 transition-colors">🕐 Schedule</button>
+      <button type="button" onclick="setDraftMode('${idPrefix}','draft')" id="${idPrefix}BtnDraft" class="flex-1 py-2 text-xs font-semibold text-slate-500 transition-colors">📝 Draft</button>
+    </div>
+    <div id="${idPrefix}ScheduleRow" class="hidden">
+      <label class="lbl">Publish Date & Time</label>
+      <input id="${idPrefix}PublishAt" type="datetime-local" class="inp" value="${localDT}"/>
+      <p class="text-slate-600 text-xs mt-1">Students ko tab dikhega jab ye time aa jaaye</p>
+    </div>
+    <div id="${idPrefix}DraftRow" class="hidden">
+      <p class="text-yellow-400 text-xs">📝 Draft mode — sirf aapko dikhega, students ko nahi. Baad mein publish kar sakte hain.</p>
+    </div>
+  </div>`;
+}
+
+function setDraftMode(idPrefix, mode) {
+  const btns = {now:`${idPrefix}BtnNow`, schedule:`${idPrefix}BtnSchedule`, draft:`${idPrefix}BtnDraft`};
+  Object.entries(btns).forEach(([k,id]) => {
+    const el = document.getElementById(id); if(!el) return;
+    const isActive = k===mode;
+    const colors = {now:'rgba(16,185,129,0.18)',schedule:'rgba(99,102,241,0.18)',draft:'rgba(251,191,36,0.18)'};
+    const textColors = {now:'#10b981',schedule:'#818cf8',draft:'#fbbf24'};
+    el.style.background = isActive ? colors[k] : '';
+    el.style.color = isActive ? textColors[k] : '';
+    el.className = `flex-1 py-2 text-xs font-semibold transition-colors${isActive?'':' text-slate-500'}`;
+  });
+  const schedRow = document.getElementById(`${idPrefix}ScheduleRow`);
+  const draftRow = document.getElementById(`${idPrefix}DraftRow`);
+  if(schedRow) schedRow.classList.toggle('hidden', mode!=='schedule');
+  if(draftRow) draftRow.classList.toggle('hidden', mode!=='draft');
+}
+
+function getDraftSettings(idPrefix='ds') {
+  const nowBtn = document.getElementById(`${idPrefix}BtnNow`);
+  const schedBtn = document.getElementById(`${idPrefix}BtnSchedule`);
+  const draftBtn = document.getElementById(`${idPrefix}BtnDraft`);
+  const isDraftActive = draftBtn?.style.color === 'rgb(251, 191, 36)' || draftBtn?.style.color === '#fbbf24';
+  const isSchedActive = schedBtn?.style.color === 'rgb(129, 140, 248)' || schedBtn?.style.color === '#818cf8';
+  if(isDraftActive) return { isDraft: true, publishAt: null, isActive: false };
+  if(isSchedActive) {
+    const val = document.getElementById(`${idPrefix}PublishAt`)?.value;
+    const publishAt = val ? new Date(val) : null;
+    const now = new Date();
+    return { isDraft: false, publishAt, isActive: publishAt ? publishAt <= now : true };
+  }
+  return { isDraft: false, publishAt: null, isActive: true };
+}
+
 // ── PROFILE ───────────────────────────────────────────────────
 async function loadProfile() {
   const d = await getDoc(doc(db,'users',session.userId));
@@ -1038,7 +1095,10 @@ function renderTeacherCourseGrid(courses) {
       <div class="p-4 flex flex-col flex-1">
         <div class="flex items-start justify-between gap-2 mb-1">
           <h4 class="font-bold text-white text-sm">${c.name}</h4>
-          <span class="badge ${isFree?'b-green':'b-yellow'} text-xs flex-shrink-0">${isFree?'🟢 Free':'💰 Paid'}</span>
+          <div class="flex gap-1 flex-shrink-0">
+            ${c.isDraft ? `<span class="badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3)">📝 Draft</span>` : c.publishAt && new Date(c.publishAt.toDate?.()??c.publishAt) > new Date() ? `<span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8;border-color:rgba(99,102,241,0.3)">🕐 Scheduled</span>` : ''}
+            <span class="badge ${isFree?'b-green':'b-yellow'} text-xs">${isFree?'🟢 Free':'💰 Paid'}</span>
+          </div>
         </div>
         ${c.category ? `<span class="text-slate-500 text-xs mb-1">📂 ${c.category}</span>` : ''}
         <p class="text-slate-500 text-xs mb-1">${c.description||c.subject||''}</p>
@@ -1049,9 +1109,10 @@ function renderTeacherCourseGrid(courses) {
           ${!isFree ? `<span class="text-sky-400 font-bold text-sm">₹${netFee.toLocaleString('en-IN')}</span>` : ''}
           ${isFree && c.selfEnrollEnabled ? `<span class="badge b-green text-xs">✓ Self-Enroll</span>` : ''}
         </div>
-        <div class="flex gap-2 mt-auto">
+        <div class="flex gap-2 mt-auto flex-wrap">
           <button onclick="editCourse('${c.id}')" class="btn btn-sky flex-1 justify-center text-xs">Edit</button>
           <button onclick="deleteCourse('${c.id}')" class="btn btn-red justify-center text-xs">Delete</button>
+          ${c.isDraft?`<button onclick="publishDraftItem('courses','${c.id}')" class="btn btn-green w-full justify-center text-xs">✅ Publish Course</button>`:''}
         </div>
       </div>
     </div>`;
@@ -1241,6 +1302,7 @@ window.openAddCourse = () => {
       </div>
       <div id="courseDatePreview" class="hidden p-2 rounded-lg text-xs" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);color:#7dd3fc"></div>
       <div><label class="lbl">Course Banner (optional)</label><input type="file" accept="image/*" id="cBanner" class="inp py-2 text-xs"/></div>
+      ${draftScheduleHTML('course')}
       <button onclick="saveCourse(null)" class="btn btn-primary w-full justify-center mt-2">Create Course</button>
     </div>`);
 };
@@ -1293,8 +1355,10 @@ window.saveCourse = async (id) => {
     await updateDoc(doc(db,'courses',id), {name,category,description,features,startDate,endDate,bannerUrl,updatedAt:serverTimestamp()});
     toast('Course updated!','success');
   } else {
-    await addDoc(collection(db,'courses'), {name,category,description,features,startDate,endDate,bannerUrl,joinCode,teacherId:session.userId,teacherName:session.name,fees:0,selfEnrollEnabled:false,createdAt:serverTimestamp()});
-    toast('Course created!','success');
+    const ds = getDraftSettings('course');
+    await addDoc(collection(db,'courses'), {name,category,description,features,startDate,endDate,bannerUrl,joinCode,teacherId:session.userId,teacherName:session.name,fees:0,selfEnrollEnabled:false,isDraft:ds.isDraft,publishAt:ds.publishAt||null,isVisible:!ds.isDraft,createdAt:serverTimestamp()});
+    const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled: ${ds.publishAt.toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'})})` : '';
+    toast('Course created!'+statusMsg,'success');
   }
   closeModal(); loadMyCourses();
 };
@@ -1409,14 +1473,15 @@ window.loadTests = async (type) => {
   if (!tests.length) { tbody.innerHTML = `<tr><td colspan="${cols}" class="text-center py-10 text-slate-600">No ${type} tests yet</td></tr>`; return; }
   tbody.innerHTML = tests.map(t => {
     const pct = t.total ? ((t.marks/t.total)*100).toFixed(1) : '-';
-    return `<tr>
-      <td><span class="text-white text-xs font-medium">${t.subject||'-'}</span></td>
+    const draftBadge = t.isDraft ? `<span class="badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);font-size:9px">📝 Draft</span>` : t.publishAt && new Date(t.publishAt?.toDate?.()??t.publishAt) > new Date() ? `<span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8;border-color:rgba(99,102,241,0.3);font-size:9px">🕐 Sched</span>` : '';
+    return `<tr ${t.isDraft?'style="opacity:0.65"':''}>
+      <td><span class="text-white text-xs font-medium">${t.subject||'-'}</span>${draftBadge?'<br>'+draftBadge:''}</td>
       <td><span class="badge b-sky text-xs">${t.courseName||'-'}</span></td>
       <td class="text-slate-500 text-xs">${t.date||''}</td>
       <td class="text-slate-300 text-xs">${t.studentName||t.studentId||'-'}</td>
       <td class="text-sky-400 font-mono text-xs">${t.marks}/${t.total}</td>
       ${type==='final'?`<td><span class="badge ${pct>=75?'b-green':pct>=50?'b-orange':'b-red'}">${pct}%</span></td>`:''}
-      <td><div class="flex gap-1"><button onclick="editTest('${t.id}','${type}')" class="btn btn-sky text-xs">Edit</button><button onclick="deleteTest('${t.id}','${type}')" class="btn btn-red text-xs">Del</button></div></td>
+      <td><div class="flex gap-1"><button onclick="editTest('${t.id}','${type}')" class="btn btn-sky text-xs">Edit</button><button onclick="deleteTest('${t.id}','${type}')" class="btn btn-red text-xs">Del</button>${t.isDraft?`<button onclick="publishDraftItem('tests','${t.id}')" class="btn btn-green text-xs">Publish</button>`:''}</div></td>
     </tr>`;
   }).join('');
 };
@@ -1435,6 +1500,7 @@ window.openAddTest = async (type) => {
       </div>
       <div><label class="lbl">Date</label><input id="tDate" class="inp" type="date" value="${new Date().toISOString().split('T')[0]}"/></div>
       ${type==='final'?'<div><label class="lbl">Remarks</label><input id="tRemarks" class="inp" placeholder="Optional"/></div>':''}
+      ${draftScheduleHTML('test')}
       <button onclick="saveTest('${type}')" class="btn btn-primary w-full justify-center mt-2">Save ${typeLabel}</button>
     </div>`);
   setTimeout(() => loadStudentsForTest(), 150);
@@ -1460,11 +1526,13 @@ window.saveTest = async (type) => {
   const courseName = courseEl.options[courseEl.selectedIndex].text;
   const studentName = studentEl.options[studentEl.selectedIndex]?.dataset.name || studentEl.value;
   const remarks = document.getElementById('tRemarks')?.value||'';
-  await addDoc(collection(db,'tests'), {type,subject,marks,total,date,courseName,courseId:courseEl.value,studentId:studentEl.value,studentName,teacherId:session.userId,teacherName:session.name,remarks,createdAt:serverTimestamp()});
-  if (type==='final') {
+  const ds = getDraftSettings('test');
+  await addDoc(collection(db,'tests'), {type,subject,marks,total,date,courseName,courseId:courseEl.value,studentId:studentEl.value,studentName,teacherId:session.userId,teacherName:session.name,remarks,isDraft:ds.isDraft,publishAt:ds.publishAt||null,isActive:ds.isActive,createdAt:serverTimestamp()});
+  if (type==='final' && !ds.isDraft) {
     await addDoc(collection(db,'results'), {type:'final',subject,marks,total,date,courseName,courseId:courseEl.value,studentId:studentEl.value,studentName,teacherId:session.userId,percentage:((marks/total)*100).toFixed(1),remarks,createdAt:serverTimestamp()});
   }
-  toast('Saved!','success'); closeModal(); loadTests(type);
+  const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled)` : '';
+  toast('Saved!'+statusMsg,'success'); closeModal(); loadTests(type);
 };
 
 window.editTest = async (id, type) => {
@@ -2195,17 +2263,24 @@ window.loadMaterials = async () => {
   if (!mats.length) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600 col-span-full">'+(schedId?'No materials linked to this class slot.':'No materials uploaded yet')+'</div>'; return; }
   const typeIcon = {pdf:'📄',notes:'📝',slides:'🖼',video:'🎬',link:'🔗',assignment:'📋',excel:'📊',zip:'🗜',other:'📁',doc:'📝'};
   el.innerHTML = mats.map(m=>`
-    <div class="mat-card">
+    <div class="mat-card" ${m.isDraft?'style="opacity:0.7;border-color:rgba(251,191,36,0.3)"':''}>
       <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-sky-400/10 border border-sky-400/15">${typeIcon[m.type]||'📎'}</div>
       <div class="flex-1 min-w-0">
-        <p class="text-white text-sm font-semibold truncate">${m.title}</p>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <p class="text-white text-sm font-semibold truncate">${m.title}</p>
+          ${m.isDraft?`<span class="badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);font-size:9px">📝 Draft</span>`:''}
+          ${m.publishAt && new Date(m.publishAt?.toDate?.()??m.publishAt)>new Date()?`<span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8;font-size:9px">🕐 Scheduled</span>`:''}
+        </div>
         <p class="text-slate-500 text-xs">${m.topic||'General'} · <span class="badge b-sky text-xs">${m.type||'file'}</span></p>
         ${m.linkedScheduleTopic?`<p class="text-emerald-400/80 text-xs mt-0.5">📅 ${m.linkedScheduleTopic}</p>`:''}
         ${m.description?`<p class="text-slate-600 text-xs italic">${m.description}</p>`:''}
       </div>
-      <div class="flex gap-1.5 flex-shrink-0">
-        ${m.url?`<a href="${m.url}" target="_blank" class="btn btn-sky text-xs">Open</a>`:''}
-        <button onclick="deleteMaterial('${m.id}')" class="btn btn-red text-xs">Del</button>
+      <div class="flex gap-1.5 flex-shrink-0 flex-col">
+        <div class="flex gap-1.5">
+          ${m.url?`<a href="${m.url}" target="_blank" class="btn btn-sky text-xs">Open</a>`:''}
+          <button onclick="deleteMaterial('${m.id}')" class="btn btn-red text-xs">Del</button>
+        </div>
+        ${m.isDraft?`<button onclick="publishDraftItem('materials','${m.id}')" class="btn btn-green text-xs w-full justify-center">✅ Publish</button>`:''}
       </div>
     </div>`).join('');
 };
@@ -2242,6 +2317,7 @@ window.openAddMaterial = async () => {
         <div id="matUploadProg" class="hidden mt-1.5"><div class="h-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="matProgBar" class="h-full bg-sky-400 transition-all" style="width:0%"></div></div><p id="matProgLabel" class="text-sky-400 text-xs mt-1">Uploading...</p></div>
       </div>
       <div><label class="lbl">Description</label><textarea id="matDesc" class="inp" rows="2" placeholder="Brief description..."></textarea></div>
+      \${draftScheduleHTML('mat')}
       <button onclick="saveMaterial()" class="btn btn-primary w-full justify-center mt-2" id="matSaveBtn">💾 Save Material</button>
     </div>`);
   // Show/hide url vs file based on type selection
@@ -2324,14 +2400,30 @@ window.saveMaterial = async () => {
     description: document.getElementById('matDesc').value.trim(),
     courseId, courseName,
     teacherId:session.userId, teacherName:session.name,
+    ...(() => { const ds=getDraftSettings('mat'); return {isDraft:ds.isDraft, publishAt:ds.publishAt||null, isActive:ds.isActive}; })(),
     createdAt:serverTimestamp()
   });
-  toast('Material saved!','success'); closeModal(); loadMaterials();
+  const ds2 = getDraftSettings('mat');
+  const statusMsg = ds2.isDraft ? ' (Draft)' : ds2.publishAt ? ` (Scheduled)` : '';
+  toast('Material saved!'+statusMsg,'success'); closeModal(); loadMaterials();
 };
 
 window.deleteMaterial = async (id) => {
   if (!confirm('Delete this material?')) return;
   await deleteDoc(doc(db,'materials',id)); toast('Deleted','success'); loadMaterials();
+};
+
+// ── DRAFT PUBLISH HELPER ──────────────────────────────────────
+window.publishDraftItem = async (collName, id) => {
+  if (!confirm('Is draft ko publish karna chahte hain? Students ko dikhne lagega.')) return;
+  await updateDoc(doc(db, collName, id), {isDraft:false, isActive:true, publishAt:null, visibility:'published', updatedAt:serverTimestamp()});
+  toast('✅ Published!','success');
+  // Reload relevant section
+  if (collName==='materials') loadMaterials();
+  else if (collName==='homeworks') loadHomeworks();
+  else if (collName==='playlists') loadPlaylists();
+  else if (collName==='tests') { loadTests('daily'); loadTests('monthly'); loadTests('final'); }
+  else if (collName==='courses') loadMyCourses();
 };
 
 // ── DAILY HOMEWORK MCQ ────────────────────────────────────────
@@ -2423,7 +2515,7 @@ window.loadHomeworks = async () => {
             <span class="badge b-sky">${hw.questions?.length||0} Qs</span>
             <span class="badge b-purple">${hw.date}</span>
             ${hw.dueDate?`<span class="badge b-orange">Due: ${hw.dueDate}</span>`:''}
-            <span class="badge ${hw.isActive!==false?'b-green':'b-red'}">${hw.isActive!==false?'Active':'Inactive'}</span>
+            ${hw.isDraft?`<span class="badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3)">📝 Draft</span>`:hw.publishAt && new Date(hw.publishAt?.toDate?.()??hw.publishAt)>new Date()?`<span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8">🕐 Scheduled</span>`:`<span class="badge ${hw.isActive!==false?'b-green':'b-red'}">${hw.isActive!==false?'Active':'Inactive'}</span>`}
           </div>
           <p class="text-slate-500 text-xs">${hw.courseName} · ${subs.length} submissions · Avg: ${avg}${avg!=='-'?'%':''}</p>
           ${hw.topic?`<p class="text-slate-600 text-xs">📌 Topic: ${hw.topic}</p>`:''}
@@ -2433,6 +2525,8 @@ window.loadHomeworks = async () => {
           <button onclick="viewHwSubmissions('${hw.id}')" class="btn btn-pink text-xs">Submissions (${subs.length})</button>
           <button onclick="editHomework('${hw.id}')" class="btn btn-sky text-xs">Edit</button>
           <button onclick="deleteHomework('${hw.id}')" class="btn btn-red text-xs">Del</button>
+          ${hw.isDraft?`<button onclick="publishDraftItem('homeworks','${hw.id}')" class="btn btn-green text-xs">✅ Publish</button>`:''}
+          ${!hw.isDraft?`<button onclick="toggleHomework('${hw.id}',${hw.isActive!==false})" class="btn ${hw.isActive!==false?'btn-red':'btn-green'} text-xs">${hw.isActive!==false?'Deactivate':'Activate'}</button>`:''}
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -2495,6 +2589,7 @@ window.openCreateHomework = async () => {
           <div><label class="lbl">Submission Type</label><select id="hwSubType" class="inp"><option>Written</option><option>File Upload</option><option>Online</option></select></div>
         </div>
       </div>
+      \${draftScheduleHTML('hw')}
       <button onclick="saveHomework()" class="btn btn-primary w-full justify-center mt-1">💾 Save Homework</button>
     </div>`);
   addHwQuestion();
@@ -2589,6 +2684,7 @@ window.saveHomework = async () => {
   }
 
   const enSnap = await getDocs(query(collection(db,'enrollments'), where('courseId','==',courseId)));
+  const ds = getDraftSettings('hw');
   await addDoc(collection(db,'homeworks'), {
     title, topic: document.getElementById('hwTopic').value.trim(),
     date, dueDate: document.getElementById('hwDue').value,
@@ -2597,11 +2693,16 @@ window.saveHomework = async () => {
     linkedScheduleId, linkedScheduleName,
     courseId, courseName: course?.name||'',
     teacherId:session.userId, teacherName:session.name,
-    enrollCount:enSnap.size, isActive:true, createdAt:serverTimestamp()
+    enrollCount:enSnap.size,
+    isDraft: ds.isDraft,
+    publishAt: ds.publishAt ? ds.publishAt : null,
+    isActive: ds.isActive,
+    createdAt:serverTimestamp()
   });
   hwQCount = 0;
   const msg = isMCQ ? `${questions.length} MCQ questions!` : 'Text homework!';
-  toast('Homework created — '+msg,'success');
+  const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled: ${ds.publishAt.toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'})})` : '';
+  toast('Homework created — '+msg+statusMsg,'success');
   closeModal(); loadHomeworks();
 };
 
@@ -3646,7 +3747,11 @@ window.loadPlaylists = async () => {
       <div class="p-4">
         <div class="flex items-start justify-between gap-2 mb-2">
           <h4 class="font-bold text-white text-sm leading-snug">${pl.name}</h4>
-          <span class="badge text-xs flex-shrink-0" style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3)">${vCount} videos</span>
+          <div class="flex gap-1 flex-shrink-0 flex-wrap justify-end">
+            ${pl.isDraft||pl.visibility==='draft'?`<span class="badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);font-size:9px">📝 Draft</span>`:''}
+            ${pl.publishAt && new Date(pl.publishAt?.toDate?.()??pl.publishAt)>new Date()?`<span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8;font-size:9px">🕐 Sched</span>`:''}
+            <span class="badge text-xs" style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3)">${vCount} videos</span>
+          </div>
         </div>
         ${pl.chapterName?`<p class="text-sky-400 text-xs mb-1">📋 ${pl.chapterName}</p>`:''}
         <p class="text-slate-600 text-xs mb-2 line-clamp-2">${pl.description || ''}</p>
@@ -3654,10 +3759,11 @@ window.loadPlaylists = async () => {
           ${pl.linkedScheduleId?`<span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,0.1);color:#6ee7b7">📅 Schedule Linked</span>`:''}
           ${pl.linkedMaterialId?`<span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(251,191,36,0.1);color:#fbbf24">📎 Material Linked</span>`:''}
         </div>`:''}
-        <div class="flex gap-2">
+        <div class="flex gap-2 flex-wrap">
           <button onclick="openPlaylistDetail('${pl.id}')" class="btn btn-primary flex-1 justify-center text-xs">▶ Manage Videos</button>
           <button onclick="editPlaylist('${pl.id}')" class="btn btn-secondary text-xs">Edit</button>
           <button onclick="deletePlaylist('${pl.id}')" class="btn btn-danger text-xs">Del</button>
+          ${pl.isDraft||pl.visibility==='draft'?`<button onclick="publishDraftItem('playlists','${pl.id}')" class="btn btn-green text-xs w-full justify-center">✅ Publish</button>`:''}
         </div>
       </div>
     </div>`;
@@ -3688,12 +3794,7 @@ window.openCreatePlaylist = async () => {
       ${matOpts?`<div><label class="lbl">📎 Link Class Material</label><select id="plLinkedMat" class="inp"><option value="">— No Link —</option>${matOpts}</select></div>`:''}
       <div><label class="lbl">Description</label><textarea id="plDesc" class="inp" rows="2" placeholder="What this playlist covers..."></textarea></div>
       <div><label class="lbl">Order / Position</label><input id="plOrder" class="inp" type="number" min="1" value="1"/></div>
-      <div><label class="lbl">Visibility</label>
-        <select id="plVisibility" class="inp">
-          <option value="published">Published (Students can see)</option>
-          <option value="draft">Draft (Hidden)</option>
-        </select>
-      </div>
+      ${draftScheduleHTML('pl')}
     </div>
     <button onclick="savePlaylist(null)" class="btn btn-primary w-full justify-center mt-4">Create Playlist</button>`);
   // Pre-select active schedule filter
@@ -3709,7 +3810,6 @@ window.savePlaylist = async (id) => {
   const chapterName = document.getElementById('plChapter')?.value||'';
   const description = document.getElementById('plDesc').value.trim();
   const order = parseInt(document.getElementById('plOrder').value) || 1;
-  const visibility = document.getElementById('plVisibility').value;
   const courseId = document.getElementById('videoCourseFilter').value;
   const course = myCourses.find(c => c.id === courseId);
   if (!name) return toast('Playlist name required', 'error');
@@ -3718,7 +3818,7 @@ window.savePlaylist = async (id) => {
   const linkedScheduleSel = document.getElementById('plLinkedSched');
   const linkedMaterialSel = document.getElementById('plLinkedMat');
   const data = {
-    name, chapterName, description, order, visibility,
+    name, chapterName, description, order,
     linkedLessonId: linkedLessonSel?.value||'',
     linkedScheduleId: linkedScheduleSel?.value||'',
     linkedMaterialId: linkedMaterialSel?.value||'',
@@ -3729,8 +3829,14 @@ window.savePlaylist = async (id) => {
     await updateDoc(doc(db, 'playlists', id), data);
     toast('Playlist updated!', 'success');
   } else {
-    await addDoc(collection(db, 'playlists'), {...data, videoCount: 0, firstVideoId: '', createdAt: serverTimestamp()});
-    toast('Playlist created!', 'success');
+    const ds = getDraftSettings('pl');
+    await addDoc(collection(db, 'playlists'), {...data, videoCount: 0, firstVideoId: '',
+      isDraft: ds.isDraft, publishAt: ds.publishAt||null,
+      visibility: ds.isDraft ? 'draft' : 'published',
+      createdAt: serverTimestamp()
+    });
+    const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled)` : '';
+    toast('Playlist created!'+statusMsg, 'success');
   }
   closeModal(); loadPlaylists();
 };
