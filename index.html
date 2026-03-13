@@ -86,8 +86,6 @@
   .hw-card{background:rgba(8,20,40,0.85);border:1px solid rgba(56,189,248,0.1);border-radius:0.8rem;padding:1rem;transition:all 0.18s;}
   .hw-card:hover{border-color:rgba(56,189,248,0.28);}
   .sched-slot{border-left:3px solid #38bdf8;background:rgba(56,189,248,0.05);border-radius:0 0.6rem 0.6rem 0;padding:0.7rem 0.9rem;margin-bottom:0.4rem;}
-  .topic-card{background:rgba(8,20,40,0.85);border:1px solid rgba(56,189,248,0.1);border-radius:0.8rem;padding:1rem;transition:all 0.18s;}
-  .topic-card:hover{border-color:rgba(56,189,248,0.3);}
   .mat-card{display:flex;align-items:center;gap:0.9rem;padding:0.8rem 1rem;border:1px solid rgba(56,189,248,0.1);border-radius:0.6rem;background:rgba(8,20,40,0.8);transition:all 0.15s;}
   .mat-card:hover{border-color:rgba(56,189,248,0.28);}
   .pbar{height:5px;border-radius:9999px;background:rgba(56,189,248,0.1);overflow:hidden;}
@@ -173,9 +171,7 @@
       <div class="nav-item" onclick="showSec('courses')">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>My Courses
       </div>
-      <div class="nav-item" onclick="showSec('topics')">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>Topic-wise Classes
-      </div>
+
       <div class="nav-item" onclick="showSec('schedule')">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Class Schedule
       </div>
@@ -256,24 +252,129 @@
 
       <!-- DASHBOARD -->
       <div id="sec-dashboard" class="section active">
+        <!-- Greeting Bar -->
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-white">Good <span id="dashGreeting">Morning</span>, <span id="dashTeacherName" class="text-sky-400"></span>! 👋</h2>
+            <p class="text-slate-500 text-xs mt-0.5" id="dashDateLine"></p>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.15)">
+            <div class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></div>
+            <span class="text-sky-400 text-xs font-semibold">Live Dashboard</span>
+          </div>
+        </div>
+
+        <!-- Stat Cards Row 1 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+          <div class="stat-card group cursor-pointer" onclick="showSec('courses')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(56,189,248,0.15)"><span class="text-lg">📚</span></div>
+              <span class="text-sky-400 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
+            </div>
+            <div id="dCourses" class="text-3xl font-bold text-sky-400 mb-0.5">0</div>
+            <div class="text-xs text-slate-500">My Courses</div>
+            <div class="mt-2 h-0.5 rounded-full bg-sky-400/10"><div id="dCoursesBar" class="h-full rounded-full bg-sky-400/50" style="width:0%;transition:width 1s ease"></div></div>
+          </div>
+          <div class="stat-card group cursor-pointer" onclick="showSec('courses')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(244,114,182,0.15)"><span class="text-lg">👥</span></div>
+              <span class="text-pink-400 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
+            </div>
+            <div id="dStudents" class="text-3xl font-bold text-pink-400 mb-0.5">0</div>
+            <div class="text-xs text-slate-500">Total Students</div>
+            <div class="mt-2 h-0.5 rounded-full bg-pink-400/10"><div id="dStudentsBar" class="h-full rounded-full bg-pink-400/50" style="width:0%;transition:width 1s ease"></div></div>
+          </div>
+          <div class="stat-card group cursor-pointer" onclick="showSec('homework')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(251,146,60,0.15)"><span class="text-lg">📝</span></div>
+              <span class="text-orange-400 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
+            </div>
+            <div id="dHomeworks" class="text-3xl font-bold text-orange-400 mb-0.5">0</div>
+            <div class="text-xs text-slate-500">Homeworks Set</div>
+            <div class="mt-2 h-0.5 rounded-full bg-orange-400/10"><div class="h-full rounded-full bg-orange-400/50" style="width:60%"></div></div>
+          </div>
+          <div class="stat-card group cursor-pointer" onclick="showSec('attendance')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(52,211,153,0.15)"><span class="text-lg">✅</span></div>
+              <span class="text-emerald-400 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">View →</span>
+            </div>
+            <div id="dAttPct" class="text-3xl font-bold text-emerald-400 mb-0.5">—</div>
+            <div class="text-xs text-slate-500">Avg Attendance</div>
+            <div class="mt-2 h-0.5 rounded-full bg-emerald-400/10"><div id="dAttBar" class="h-full rounded-full bg-emerald-400/50" style="width:0%;transition:width 1s ease"></div></div>
+          </div>
+        </div>
+
+        <!-- Stat Cards Row 2 -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div class="stat-card"><div class="text-xs text-slate-500 mb-1">My Courses</div><div id="dCourses" class="text-2xl font-bold text-sky-400">0</div></div>
-          <div class="stat-card"><div class="text-xs text-slate-500 mb-1">Total Students</div><div id="dStudents" class="text-2xl font-bold text-pink-400">0</div></div>
-          <div class="stat-card"><div class="text-xs text-slate-500 mb-1">Tests Created</div><div id="dTests" class="text-2xl font-bold text-green-400">0</div></div>
-          <div class="stat-card"><div class="text-xs text-slate-500 mb-1">Homeworks</div><div id="dHomeworks" class="text-2xl font-bold text-orange-400">0</div></div>
+          <div class="stat-card">
+            <div class="text-xs text-slate-500 mb-1">Tests Created</div>
+            <div id="dTests" class="text-2xl font-bold text-violet-400">0</div>
+            <div class="text-xs text-slate-600 mt-1">daily · monthly · final</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-xs text-slate-500 mb-1">Schedule Slots</div>
+            <div id="dSchedule" class="text-2xl font-bold text-sky-300">0</div>
+            <div class="text-xs text-slate-600 mt-1">across all courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-xs text-slate-500 mb-1">Materials</div>
+            <div id="dMaterials" class="text-2xl font-bold text-yellow-400">0</div>
+            <div class="text-xs text-slate-600 mt-1">uploaded resources</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-xs text-slate-500 mb-1">HW Submissions</div>
+            <div id="dSubmissions" class="text-2xl font-bold text-pink-300">0</div>
+            <div class="text-xs text-slate-600 mt-1">from students</div>
+          </div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-          <div class="glass-card p-5"><h3 class="text-sm font-semibold text-slate-300 mb-4">Students per Course</h3><canvas id="chartStudents" height="200"></canvas></div>
-          <div class="glass-card p-5"><h3 class="text-sm font-semibold text-slate-300 mb-4">Test Distribution</h3><canvas id="chartPerf" height="200"></canvas></div>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
           <div class="glass-card p-5">
-            <h3 class="text-sm font-semibold text-slate-300 mb-4">📅 Today's Classes</h3>
-            <div id="todayClasses" class="space-y-2"><div class="text-slate-600 text-xs text-center py-4">Loading schedule...</div></div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">👥 Students per Course</h3>
+            </div>
+            <canvas id="chartStudents" height="200"></canvas>
           </div>
           <div class="glass-card p-5">
-            <h3 class="text-sm font-semibold text-slate-300 mb-4">📝 Recent Homework Submissions</h3>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">📊 Test Distribution</h3>
+            </div>
+            <canvas id="chartPerf" height="200"></canvas>
+          </div>
+          <div class="glass-card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">📈 HW Submission Rate</h3>
+            </div>
+            <canvas id="chartHWRate" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <!-- Today's Schedule -->
+          <div class="glass-card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">📅 Today's Classes</h3>
+              <button onclick="showSec('schedule')" class="text-sky-400 text-xs hover:text-sky-300">View All →</button>
+            </div>
+            <div id="todayClasses" class="space-y-2"><div class="text-slate-600 text-xs text-center py-4">Loading schedule...</div></div>
+          </div>
+          <!-- Pending HW Submissions -->
+          <div class="glass-card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">📝 Recent Submissions</h3>
+              <button onclick="showSec('homework')" class="text-sky-400 text-xs hover:text-sky-300">View All →</button>
+            </div>
             <div id="recentSubmissions" class="space-y-2"><div class="text-slate-600 text-xs text-center py-4">Loading...</div></div>
+          </div>
+          <!-- Course Progress -->
+          <div class="glass-card p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-slate-300">🎯 Course Progress</h3>
+              <button onclick="showSec('curriculum')" class="text-sky-400 text-xs hover:text-sky-300">Manage →</button>
+            </div>
+            <div id="dashCourseProgress" class="space-y-3"><div class="text-slate-600 text-xs text-center py-4">Loading...</div></div>
           </div>
         </div>
       </div>
@@ -301,7 +402,11 @@
               <div><label class="lbl">User ID <span class="text-slate-700 text-xs font-normal">(cannot be changed)</span></label><input id="pUserId" class="inp" readonly style="opacity:0.5;cursor:not-allowed;background:rgba(9,6,22,0.5)"/></div>
               <div><label class="lbl">Phone</label><input id="pPhone" class="inp"/></div>
               <div><label class="lbl">Email</label><input id="pEmail" class="inp" type="email"/></div>
+              <div><label class="lbl">Date of Birth</label><input id="pDOB" class="inp" type="date"/></div>
+              <div><label class="lbl">Gender</label><select id="pGender" class="inp"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
               <div><label class="lbl">Qualification</label><input id="pQual" class="inp"/></div>
+              <div><label class="lbl">Experience</label><input id="pExp" class="inp" placeholder="e.g. 3 years"/></div>
+              <div class="md:col-span-2"><label class="lbl">Address</label><input id="pAddr" class="inp"/></div>
               <div><label class="lbl">New Password</label><input id="pPass" class="inp" type="password" placeholder="Leave blank to keep"/></div>
             </div>
             <button onclick="saveProfile()" class="btn btn-primary mt-5">Save Changes</button>
@@ -407,25 +512,27 @@
 
       <!-- COURSES -->
       <div id="sec-courses" class="section">
-        <div class="flex justify-end mb-4">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <input id="tCourseSearch" oninput="filterTeacherCourses()" class="inp flex-1" style="min-width:140px" placeholder="🔍 Search courses..."/>
+          <select id="tCourseCatFilter" class="inp w-auto text-xs" onchange="filterTeacherCourses()">
+            <option value="">📂 All Categories</option>
+          </select>
+          <select id="tCourseFeeFilter" class="inp w-auto text-xs" onchange="filterTeacherCourses()">
+            <option value="">All Types</option>
+            <option value="free">🟢 Free</option>
+            <option value="paid">💰 Paid</option>
+          </select>
           <button onclick="openAddCourse()" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>New Course
           </button>
         </div>
+        <div id="tCoursePills" class="flex flex-wrap gap-2 mb-4"></div>
         <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="glass-card p-6 text-center text-slate-600 col-span-full">Loading courses...</div>
         </div>
       </div>
 
       <!-- TOPIC-WISE CLASSES -->
-      <div id="sec-topics" class="section">
-        <div class="flex flex-col sm:flex-row gap-3 mb-5">
-          <select id="topicCourseFilter" class="inp" onchange="loadTopics()"><option value="">Select Course</option></select>
-          <button onclick="openAddTopic()" class="btn btn-primary whitespace-nowrap">+ Add Topic/Class</button>
-        </div>
-        <div id="topicsList" class="space-y-3"><div class="glass-card p-6 text-center text-slate-600">Select a course to view topics</div></div>
-      </div>
-
       <!-- CLASS SCHEDULE -->
       <div id="sec-schedule" class="section">
         <div class="flex flex-col sm:flex-row gap-3 mb-5">
@@ -446,10 +553,10 @@
 
       <!-- CLASS MATERIALS -->
       <div id="sec-materials" class="section">
-        <div class="flex flex-col sm:flex-row gap-3 mb-5">
-          <select id="matCourseFilter" class="inp" onchange="loadMaterials()"><option value="">Select Course</option></select>
-          <select id="matTopicFilter" class="inp" onchange="loadMaterials()"><option value="">All Topics</option></select>
-          <button onclick="openAddMaterial()" class="btn btn-primary whitespace-nowrap">+ Upload Material</button>
+        <div class="flex flex-col sm:flex-row gap-3 mb-5 flex-wrap">
+          <select id="matCourseFilter" class="inp" onchange="onMatCourseChange()"><option value="">Select Course</option></select>
+          <select id="matSchedFilter" class="inp" onchange="loadMaterials()" style="max-width:220px"><option value="">All Classes</option></select>
+          <button onclick="openAddMaterial()" class="btn btn-primary whitespace-nowrap ml-auto">+ Upload Material</button>
         </div>
         <div id="materialsList" class="grid grid-cols-1 md:grid-cols-2 gap-3"><div class="glass-card p-6 text-center text-slate-600 col-span-full">Select a course to view materials</div></div>
       </div>
@@ -458,8 +565,9 @@
       <div id="sec-videos" class="section">
         <!-- Playlist Manager View -->
         <div id="videoPlaylistView">
-          <div class="flex flex-col sm:flex-row gap-3 mb-5">
-            <select id="videoCourseFilter" class="inp" onchange="loadPlaylists()"><option value="">Select Course</option></select>
+          <div class="flex flex-col sm:flex-row gap-3 mb-5 flex-wrap">
+            <select id="videoCourseFilter" class="inp" onchange="onVideoCourseChange()"><option value="">Select Course</option></select>
+            <select id="videoSchedFilter" class="inp" onchange="loadPlaylists()" style="max-width:220px"><option value="">All Classes</option></select>
             <button onclick="openCreatePlaylist()" class="btn btn-primary whitespace-nowrap ml-auto">+ Create Playlist</button>
           </div>
           <div id="playlistGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -503,57 +611,36 @@
       </div>
 
       <div id="sec-curriculum" class="section">
-        <!-- Top bar -->
         <div class="flex flex-col sm:flex-row gap-3 mb-5">
           <select id="curCourseFilter" class="inp flex-1" onchange="loadCurriculum()"><option value="">Select Course</option></select>
-          <button onclick="openCreateCurriculum()" class="btn btn-primary whitespace-nowrap">+ Setup Curriculum</button>
+          <button onclick="openAddModule()" id="btnAddModule" class="btn btn-primary whitespace-nowrap hidden">+ Module</button>
+          <button onclick="exportCurriculumPDF()" id="btnCurPDF" class="btn btn-ghost whitespace-nowrap hidden">📄 PDF</button>
         </div>
-        <!-- Curriculum overview card -->
-        <div id="curOverviewCard" class="glass-card p-5 mb-5 hidden">
-          <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
-            <div>
-              <h2 id="curTitle" class="text-lg font-bold text-white"></h2>
-              <p id="curSubtitle" class="text-slate-500 text-sm mt-0.5"></p>
-            </div>
-            <div class="flex gap-2 flex-wrap">
-              <button onclick="editCurriculumMeta()" class="btn btn-secondary text-xs">Edit Info</button>
-              <button onclick="openAddUnit()" class="btn btn-primary text-xs">+ Add Unit</button>
-              <button onclick="exportCurriculumPDF()" class="btn btn-ghost text-xs">📄 Export PDF</button>
-            </div>
+        <div id="curStatsRow" class="grid grid-cols-3 gap-3 mb-5 hidden">
+          <div class="rounded-xl p-3 text-center" style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.14)">
+            <div id="curStatModules" class="text-xl font-bold text-sky-400">0</div><div class="text-slate-500 text-xs mt-0.5">Modules</div>
           </div>
-          <!-- Stats row -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-            <div class="rounded-xl p-3 text-center" style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.14)">
-              <div id="curStatUnits" class="text-xl font-bold text-sky-400">0</div><div class="text-slate-500 text-xs mt-0.5">Units</div>
-            </div>
-            <div class="rounded-xl p-3 text-center" style="background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.14)">
-              <div id="curStatLessons" class="text-xl font-bold text-violet-400">0</div><div class="text-slate-500 text-xs mt-0.5">Lessons</div>
-            </div>
-            <div class="rounded-xl p-3 text-center" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.14)">
-              <div id="curStatDone" class="text-xl font-bold text-emerald-400">0</div><div class="text-slate-500 text-xs mt-0.5">Completed</div>
-            </div>
-            <div class="rounded-xl p-3 text-center" style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.14)">
-              <div id="curStatPct" class="text-xl font-bold text-yellow-400">0%</div><div class="text-slate-500 text-xs mt-0.5">Progress</div>
-            </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.14)">
+            <div id="curStatTitles" class="text-xl font-bold text-violet-400">0</div><div class="text-slate-500 text-xs mt-0.5">Titles</div>
           </div>
-          <!-- Overall progress bar -->
-          <div class="pbar mb-1"><div id="curOverallBar" class="pfill" style="width:0%"></div></div>
-          <p id="curProgressLabel" class="text-slate-600 text-xs text-right"></p>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.14)">
+            <div id="curStatDone" class="text-xl font-bold text-emerald-400">0%</div><div class="text-slate-500 text-xs mt-0.5">Done</div>
+          </div>
         </div>
-        <!-- Units list -->
-        <div id="curUnitsContainer" class="space-y-4"></div>
+        <div id="curModulesContainer" class="space-y-4"></div>
         <div id="curEmpty" class="glass-card p-10 text-center text-slate-600">
           <div class="text-4xl mb-3">📋</div>
-          <p class="mb-4">Select a course to view its curriculum</p>
+          <p class="mb-3">Select a course to view its curriculum</p>
         </div>
       </div>
 
       <!-- DAILY HOMEWORK MCQ -->
       <div id="sec-homework" class="section">
         <div class="flex flex-col sm:flex-row gap-3 mb-5 flex-wrap">
-          <select id="hwCourseFilter" class="inp" onchange="loadHomeworks()"><option value="">Select Course</option></select>
-          <input id="hwDateFilter" class="inp" type="date" onchange="loadHomeworks()" style="max-width:180px"/>
-          <button onclick="openCreateHomework()" class="btn btn-primary whitespace-nowrap">+ New Homework</button>
+          <select id="hwCourseFilter" class="inp" onchange="onHwCourseChange()"><option value="">Select Course</option></select>
+          <select id="hwSchedFilter" class="inp" onchange="loadHomeworks()" style="max-width:220px"><option value="">All Classes</option></select>
+          <input id="hwDateFilter" class="inp" type="date" onchange="loadHomeworks()" style="max-width:160px"/>
+          <button onclick="openCreateHomework()" class="btn btn-primary whitespace-nowrap ml-auto">+ New Homework</button>
         </div>
         <div id="hwList" class="space-y-4"><div class="glass-card p-6 text-center text-slate-600">Select a course to view homeworks</div></div>
       </div>
@@ -639,6 +726,7 @@
         <div class="flex flex-col sm:flex-row gap-3 mb-5">
           <select id="resultCourse" class="inp" onchange="loadResults()"><option value="">Select Course</option></select>
           <select id="resultStudent" class="inp" onchange="loadResults()"><option value="">All Students</option></select>
+          <button onclick="openTeacherMarksheetPanel()" class="btn bp whitespace-nowrap">🎓 Generate Marksheet</button>
         </div>
         <div class="grid grid-cols-1 gap-4">
           <div class="glass-card p-5"><h3 class="font-semibold text-white text-sm mb-3">Performance by Type</h3><canvas id="chartResults" height="140"></canvas></div>
@@ -647,8 +735,8 @@
               <h3 class="font-semibold text-white text-sm">All Results</h3>
               <div id="classAvgBadge" class="badge b-sky" style="display:none">Avg: 0%</div>
             </div>
-            <table class="tbl"><thead><tr><th>Student</th><th>Type</th><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th></tr></thead>
-            <tbody id="resultsBody"><tr><td colspan="6" class="text-center py-10 text-slate-600">Select a course</td></tr></tbody></table>
+            <table class="tbl"><thead><tr><th>Student</th><th>Type</th><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Action</th></tr></thead>
+            <tbody id="resultsBody"><tr><td colspan="7" class="text-center py-10 text-slate-600">Select a course</td></tr></tbody></table>
           </div>
         </div>
       </div>
@@ -718,6 +806,7 @@
 (async () => {
 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
 const { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+const { getStorage, ref: storageRef, uploadBytes, getDownloadURL, deleteObject } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
 
 const firebaseConfig = {
   apiKey: "AIzaSyBOSBr1wtIx718p8dkxYju1zZNc-cdFW9I",
@@ -731,10 +820,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig, "VisionTeacherApp");
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 let session = null;
 let myCourses = [], myStudents = [];
-let chartStudents = null, chartPerf = null, chartResults = null;
+let chartStudents = null, chartPerf = null, chartResults = null; // legacy refs kept for results section
 let notifUnsub = null, hwUnsub = null;
 const attStatus = {};
 
@@ -815,7 +905,7 @@ window.showSec = (sec) => {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sec-' + sec).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick')?.includes("'" + sec + "'")) n.classList.add('active'); });
-  const titles = {dashboard:'Dashboard',profile:'My Profile',batches:'Batch Management',courses:'My Courses',topics:'Topic-wise Classes',schedule:'Class Schedule',materials:'Class Materials',videos:'Online Classes',curriculum:'Curriculum',attendance:'Attendance',homework:'Daily Homework MCQ',dailytest:'Daily Tests',monthlytest:'Monthly Tests',finalexam:'Final Exam',onlineexam:'MCQ Online Exams',results:'Results',certificates:'Certificates',notifications:'Notifications'};
+  const titles = {dashboard:'Dashboard',profile:'My Profile',batches:'Batch Management',courses:'My Courses',schedule:'Class Schedule',materials:'Class Materials',videos:'Online Classes',curriculum:'Curriculum',attendance:'Attendance',homework:'Daily Homework MCQ',dailytest:'Daily Tests',monthlytest:'Monthly Tests',finalexam:'Final Exam',onlineexam:'MCQ Online Exams',results:'Results',certificates:'Certificates',notifications:'Notifications'};
   document.getElementById('pageTitle').textContent = titles[sec] || sec;
   if (window.innerWidth < 1024) document.getElementById('sidebar').style.transform = 'translateX(-100%)';
   if (sec === 'attendance') populateAttCourses();
@@ -825,7 +915,6 @@ window.showSec = (sec) => {
   if (sec === 'onlineexam') loadOnlineExams();
   if (sec === 'results') populateResultCourses();
   if (sec === 'certificates') populateCertCourses();
-  if (sec === 'topics') populateTopicCourseFilter();
   if (sec === 'schedule') populateSchedCourseFilter();
   if (sec === 'materials') populateMatFilters();
   if (sec === 'videos') { populateVideoCourseFilter(); }
@@ -843,7 +932,11 @@ async function loadProfile() {
   document.getElementById('pUserId').value = data.userId||'';
   document.getElementById('pPhone').value = data.phone||'';
   document.getElementById('pEmail').value = data.email||'';
+  document.getElementById('pDOB').value = data.dob||'';
+  document.getElementById('pGender').value = data.gender||'';
   document.getElementById('pQual').value = data.qualification||'';
+  document.getElementById('pExp').value = data.experience||'';
+  document.getElementById('pAddr').value = data.address||'';
   document.getElementById('profDisplayName').textContent = data.name;
   document.getElementById('profDisplayId').textContent = data.userId;
 }
@@ -852,11 +945,15 @@ window.saveProfile = async () => {
   const name = document.getElementById('pName').value.trim();
   const phone = document.getElementById('pPhone').value.trim();
   const email = document.getElementById('pEmail').value.trim();
+  const dob = document.getElementById('pDOB').value;
+  const gender = document.getElementById('pGender').value;
   const qual = document.getElementById('pQual').value.trim();
+  const exp = document.getElementById('pExp').value.trim();
+  const addr = document.getElementById('pAddr').value.trim();
   const pass = document.getElementById('pPass').value;
   if (!name) return toast('Name is required','error');
   try {
-    const upd = {name, phone, email, qualification:qual, updatedAt:serverTimestamp()};
+    const upd = {name, phone, email, dob, gender, qualification:qual, experience:exp, address:addr, updatedAt:serverTimestamp()};
     if (pass) upd.password = pass;
     await updateDoc(doc(db,'users',session.userId), upd);
     session.name = name;
@@ -900,50 +997,249 @@ async function loadMyCourses() {
 }
 
 function renderCourses() {
-  const grid = document.getElementById('coursesGrid');
-  if (!myCourses.length) { grid.innerHTML = '<div class="glass-card p-8 text-center text-slate-600 col-span-full">No courses yet. Create your first course!</div>'; return; }
-  grid.innerHTML = myCourses.map(c => `
-    <div class="glass-card p-5 hover:border-sky-400/25 transition-all">
-      ${c.bannerUrl ? `<img src="${c.bannerUrl}" class="w-full h-28 object-cover rounded-lg mb-3"/>` : `<div class="w-full h-28 rounded-lg mb-3 flex items-center justify-center bg-gradient-to-br from-sky-400/15 to-pink-400/15"><span class="text-3xl">📚</span></div>`}
-      <h4 class="font-bold text-white text-sm mb-1">${c.name}</h4>
-      <p class="text-slate-500 text-xs mb-2">${c.subject||''}</p>
-      <div class="flex items-center justify-between mb-3">
-        <span class="badge b-sky">${c.studentCount||0} Students</span>
-        <span class="font-mono text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded">${c.joinCode}</span>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="editCourse('${c.id}')" class="btn btn-sky flex-1 justify-center text-xs">Edit</button>
-        <button onclick="deleteCourse('${c.id}')" class="btn btn-red justify-center text-xs">Delete</button>
-      </div>
-    </div>
-  `).join('');
+  // Build category pills
+  const cats = [...new Set(myCourses.map(c=>c.category).filter(Boolean))];
+  const pillsEl = document.getElementById('tCoursePills');
+  if(pillsEl){
+    pillsEl.innerHTML = `<button onclick="filterTeacherCourses('')" id="tcp-all" class="badge b-sky" style="cursor:pointer;padding:4px 12px;font-size:11px">All</button>`
+      + cats.map(cat=>`<button onclick="filterTeacherCourses('${cat}')" id="tcp-${CSS.escape(cat)}" class="badge" style="cursor:pointer;padding:4px 12px;font-size:11px;background:rgba(148,163,184,0.1);border-color:rgba(148,163,184,0.2);color:#94a3b8">${cat}</button>`).join('');
+  }
+  // Populate category dropdown
+  const catSel = document.getElementById('tCourseCatFilter');
+  if(catSel && cats.length){
+    catSel.innerHTML = `<option value="">📂 All Categories</option>` + cats.map(c=>`<option>${c}</option>`).join('');
+  }
+  renderTeacherCourseGrid(myCourses);
 }
+
+window.filterTeacherCourses = (catOverride) => {
+  const q = (document.getElementById('tCourseSearch')?.value||'').toLowerCase();
+  const cat = catOverride !== undefined ? catOverride : (document.getElementById('tCourseCatFilter')?.value||'');
+  const feeType = document.getElementById('tCourseFeeFilter')?.value||'';
+  document.querySelectorAll('[id^="tcp-"]').forEach(b=>{b.className='badge';b.style.cssText='cursor:pointer;padding:4px 12px;font-size:11px;background:rgba(148,163,184,0.1);border-color:rgba(148,163,184,0.2);color:#94a3b8';});
+  const ap = cat ? document.getElementById('tcp-'+CSS.escape(cat)) : document.getElementById('tcp-all');
+  if(ap){ ap.className='badge b-sky'; ap.style.cssText='cursor:pointer;padding:4px 12px;font-size:11px'; }
+  let filtered = myCourses;
+  if(cat) filtered = filtered.filter(c=>c.category===cat);
+  if(feeType==='free') filtered = filtered.filter(c=>!(c.fees>0));
+  if(feeType==='paid') filtered = filtered.filter(c=>c.fees>0);
+  if(q) filtered = filtered.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.category||'').toLowerCase().includes(q)||(c.description||c.subject||'').toLowerCase().includes(q)||(c.features||'').toLowerCase().includes(q));
+  renderTeacherCourseGrid(filtered);
+};
+
+function renderTeacherCourseGrid(courses) {
+  const grid = document.getElementById('coursesGrid');
+  if (!courses.length) { grid.innerHTML = '<div class="glass-card p-8 text-center text-slate-600 col-span-full">No courses found</div>'; return; }
+  grid.innerHTML = courses.map(c => {
+    const isFree = !(c.fees>0);
+    const netFee = c.netFee||c.fees||0;
+    return `<div class="glass-card overflow-hidden hover:border-sky-400/25 transition-all" style="display:flex;flex-direction:column">
+      ${c.bannerUrl ? `<img src="${c.bannerUrl}" class="w-full h-28 object-cover"/>` : `<div class="w-full h-28 flex items-center justify-center bg-gradient-to-br from-sky-400/15 to-pink-400/15"><span class="text-3xl">📚</span></div>`}
+      <div class="p-4 flex flex-col flex-1">
+        <div class="flex items-start justify-between gap-2 mb-1">
+          <h4 class="font-bold text-white text-sm">${c.name}</h4>
+          <span class="badge ${isFree?'b-green':'b-yellow'} text-xs flex-shrink-0">${isFree?'🟢 Free':'💰 Paid'}</span>
+        </div>
+        ${c.category ? `<span class="text-slate-500 text-xs mb-1">📂 ${c.category}</span>` : ''}
+        <p class="text-slate-500 text-xs mb-1">${c.description||c.subject||''}</p>
+        ${c.features?(c.features.split(',').map(f=>`<span class="badge b-sky text-xs">${f.trim()}</span>`).join('')):''}
+        <div class="flex items-center gap-2 mb-2">${getCourseStatusBadge(c)}${c.startDate&&c.endDate?`<span class="text-slate-600 text-xs">${c.startDate} → ${c.endDate}</span>`:''}</div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="badge b-sky">${c.studentCount||0} Students</span>
+          ${!isFree ? `<span class="text-sky-400 font-bold text-sm">₹${netFee.toLocaleString('en-IN')}</span>` : ''}
+          ${isFree && c.selfEnrollEnabled ? `<span class="badge b-green text-xs">✓ Self-Enroll</span>` : ''}
+        </div>
+        <div class="flex gap-2 mt-auto">
+          <button onclick="editCourse('${c.id}')" class="btn btn-sky flex-1 justify-center text-xs">Edit</button>
+          <button onclick="deleteCourse('${c.id}')" class="btn btn-red justify-center text-xs">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let chartStudentsD = null, chartPerfD = null, chartHWRateD = null;
 
 async function loadDashboard() {
-  document.getElementById('dCourses').textContent = myCourses.length;
-  document.getElementById('dStudents').textContent = myStudents.length;
-  const testSnap = await getDocs(query(collection(db,'tests'), where('teacherId','==',session.userId)));
-  const hwSnap = await getDocs(query(collection(db,'homeworks'), where('teacherId','==',session.userId)));
-  document.getElementById('dTests').textContent = testSnap.size;
-  document.getElementById('dHomeworks').textContent = hwSnap.size;
-  renderDashCharts(testSnap.docs.map(d => d.data()));
+  // Greeting
+  const hr = new Date().getHours();
+  document.getElementById('dashGreeting').textContent = hr<12?'Morning':hr<17?'Afternoon':'Evening';
+  document.getElementById('dashTeacherName').textContent = session.name?.split(' ')[0]||'Teacher';
+  document.getElementById('dashDateLine').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Fetch all data in parallel
+  const [testSnap, hwSnap, subSnap, schedSnap, matSnap] = await Promise.all([
+    getDocs(query(collection(db,'tests'), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'homeworks'), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'hwSubmissions'), where('teacherId','==',session.userId))).catch(()=>({size:0,docs:[]})),
+    getDocs(query(collection(db,'schedule'), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'materials'), where('teacherId','==',session.userId)))
+  ]);
+
+  const totalStudents = myStudents.length;
+  const totalCourses = myCourses.length;
+  const tests = testSnap.docs.map(d=>d.data());
+
+  // Attendance stats across all courses
+  let attTotal=0, attPresent=0;
+  try {
+    const attSnap = await getDocs(query(collection(db,'attendance'), where('teacherId','==',session.userId)));
+    attSnap.docs.forEach(d=>{ attTotal++; if(d.data().status==='present') attPresent++; });
+  } catch(e){}
+  const attPct = attTotal ? Math.round(attPresent/attTotal*100) : 0;
+
+  // Animate stat cards
+  const animCount = (id, val) => {
+    const el = document.getElementById(id); if(!el) return;
+    let curr=0; const step=Math.ceil(val/25);
+    const t=setInterval(()=>{ curr=Math.min(curr+step,val); el.textContent=curr; if(curr>=val)clearInterval(t); },40);
+  };
+  animCount('dCourses', totalCourses);
+  animCount('dStudents', totalStudents);
+  animCount('dHomeworks', hwSnap.size);
+  animCount('dTests', testSnap.size);
+  animCount('dSchedule', schedSnap.size);
+  animCount('dMaterials', matSnap.size);
+  animCount('dSubmissions', subSnap.size||0);
+  document.getElementById('dAttPct').textContent = attPct+'%';
+
+  // Progress bars
+  setTimeout(()=>{
+    const maxS = Math.max(...myCourses.map(c=>c.studentCount||0),1);
+    document.getElementById('dCoursesBar').style.width = Math.min(100,totalCourses*20)+'%';
+    document.getElementById('dStudentsBar').style.width = Math.min(100,totalStudents*5)+'%';
+    document.getElementById('dAttBar').style.width = attPct+'%';
+  },300);
+
+  renderDashCharts(tests, hwSnap.docs);
+  renderCourseProgress();
 }
 
-function renderDashCharts(tests) {
-  if (chartStudents) chartStudents.destroy();
+function renderDashCharts(tests, hwDocs) {
+  const CHART_DEFAULTS = { responsive:true, maintainAspectRatio:true, plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}} };
+
+  // Chart 1: Students per course (horizontal bar)
+  if (chartStudentsD) chartStudentsD.destroy();
   const ctx1 = document.getElementById('chartStudents').getContext('2d');
-  chartStudents = new Chart(ctx1, {type:'bar',data:{labels:myCourses.map(c=>c.name),datasets:[{label:'Students',data:myCourses.map(c=>c.studentCount||0),backgroundColor:'rgba(56,189,248,0.6)',borderColor:'#38bdf8',borderWidth:1,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#475569'},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#475569'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
-  if (chartPerf) chartPerf.destroy();
+  const shortNames = myCourses.map(c=>c.name.length>12?c.name.slice(0,12)+'…':c.name);
+  chartStudentsD = new Chart(ctx1, {type:'bar',data:{
+    labels:shortNames,
+    datasets:[{label:'Students',data:myCourses.map(c=>c.studentCount||0),
+      backgroundColor:['rgba(56,189,248,0.7)','rgba(167,139,250,0.7)','rgba(244,114,182,0.7)','rgba(52,211,153,0.7)','rgba(251,146,60,0.7)'],
+      borderRadius:6,borderWidth:0}]
+  },options:{...CHART_DEFAULTS,indexAxis:'y',plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#475569'},grid:{color:'rgba(255,255,255,0.03)'},beginAtZero:true},
+            y:{ticks:{color:'#94a3b8',font:{size:10}},grid:{display:false}}}}});
+
+  // Chart 2: Test type doughnut
+  if (chartPerfD) chartPerfD.destroy();
   const ctx2 = document.getElementById('chartPerf').getContext('2d');
-  chartPerf = new Chart(ctx2, {type:'doughnut',data:{labels:['Daily','Monthly','Final'],datasets:[{data:[tests.filter(t=>t.type==='daily').length,tests.filter(t=>t.type==='monthly').length,tests.filter(t=>t.type==='final').length],backgroundColor:['rgba(56,189,248,0.7)','rgba(244,114,182,0.7)','rgba(52,211,153,0.7)'],borderWidth:2,borderColor:['#38bdf8','#f472b6','#34d399']}]},options:{responsive:true,plugins:{legend:{labels:{color:'#64748b'}}}}});
+  const dCount=[tests.filter(t=>t.type==='daily').length,tests.filter(t=>t.type==='monthly').length,tests.filter(t=>t.type==='final').length];
+  chartPerfD = new Chart(ctx2, {type:'doughnut',data:{
+    labels:['Daily','Monthly','Final'],
+    datasets:[{data:dCount,backgroundColor:['rgba(56,189,248,0.75)','rgba(244,114,182,0.75)','rgba(52,211,153,0.75)'],
+      borderColor:['#38bdf8','#f472b6','#34d399'],borderWidth:2}]
+  },options:{...CHART_DEFAULTS,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:'#64748b',font:{size:10},padding:10}}}}});
+
+  // Chart 3: HW submission rate per course
+  if (chartHWRateD) chartHWRateD.destroy();
+  const ctx3 = document.getElementById('chartHWRate').getContext('2d');
+  const hwByCourse={};
+  hwDocs.forEach(d=>{ const dd=d.data(); hwByCourse[dd.courseId]=(hwByCourse[dd.courseId]||0)+1; });
+  const hwLabels = myCourses.map(c=>c.name.length>10?c.name.slice(0,10)+'…':c.name);
+  const hwVals = myCourses.map(c=>hwByCourse[c.id]||0);
+  chartHWRateD = new Chart(ctx3, {type:'bar',data:{
+    labels:hwLabels,
+    datasets:[{label:'HWs',data:hwVals,backgroundColor:'rgba(251,146,60,0.65)',borderColor:'#fb923c',borderWidth:0,borderRadius:6}]
+  },options:{...CHART_DEFAULTS,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#94a3b8',font:{size:10}},grid:{display:false}},
+            y:{ticks:{color:'#475569'},grid:{color:'rgba(255,255,255,0.03)'},beginAtZero:true}}}});
 }
+
+async function renderCourseProgress() {
+  const el = document.getElementById('dashCourseProgress');
+  if (!myCourses.length) { el.innerHTML='<p class="text-slate-600 text-xs text-center py-4">No courses yet</p>'; return; }
+  const progressData = await Promise.all(myCourses.map(async c => {
+    const [unitsSnap,hwSnap] = await Promise.all([
+      getDocs(query(collection(db,'curriculumUnits'), where('courseId','==',c.id))),
+      getDocs(query(collection(db,'homeworks'), where('courseId','==',c.id), where('teacherId','==',session.userId)))
+    ]);
+    return { name:c.name, students:c.studentCount||0, units:unitsSnap.size, hws:hwSnap.size, status:getCourseStatus(c) };
+  }));
+  el.innerHTML = progressData.map(p=>`
+    <div class="p-3 rounded-xl" style="background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.1)">
+      <div class="flex items-center justify-between mb-1.5">
+        <p class="text-white text-xs font-semibold truncate flex-1">${p.name}</p>
+        <span class="text-xs ml-2 ${p.status==='active'?'text-emerald-400':p.status==='upcoming'?'text-yellow-400':'text-slate-600'}">${p.status==='active'?'●':'○'}</span>
+      </div>
+      <div class="flex gap-3 text-xs text-slate-500">
+        <span>👥 ${p.students}</span>
+        <span>📚 ${p.units} modules</span>
+        <span>📝 ${p.hws} HWs</span>
+      </div>
+    </div>`).join('');
+}
+
+
+
+// ── COURSE DATE HELPERS ───────────────────────────────────────
+function getCourseStatus(course) {
+  if (!course.startDate || !course.endDate) return 'no-date';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(course.startDate);
+  const end = new Date(course.endDate);
+  if (today < start) return 'upcoming';
+  if (today > end) return 'expired';
+  return 'active';
+}
+function getCourseStatusBadge(course) {
+  const s = getCourseStatus(course);
+  if (s==='upcoming') return `<span class="badge" style="background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.25);font-size:10px">🕐 Upcoming</span>`;
+  if (s==='expired')  return `<span class="badge" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);font-size:10px">⛔ Expired</span>`;
+  if (s==='active')   return `<span class="badge" style="background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.25);font-size:10px">✅ Active</span>`;
+  return '';
+}
+function getCourseStatusText(startDate, endDate) {
+  if (!startDate || !endDate) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(startDate); const end = new Date(endDate);
+  const diffDays = Math.round((end - start) / 86400000);
+  const months = Math.floor(diffDays / 30); const days = diffDays % 30;
+  const dur = months > 0 ? `${months}m ${days>0?days+'d':''}` : `${diffDays} days`;
+  if (today < start) { const dl = Math.ceil((start-today)/86400000); return `🕐 Starts in ${dl} day${dl!==1?'s':''} · ${dur.trim()}`; }
+  if (today > end) { return `⛔ Ended ${endDate} · ${dur.trim()}`; }
+  const rem = Math.ceil((end-today)/86400000);
+  return `✅ Ends in ${rem} day${rem!==1?'s':''} (${endDate}) · ${dur.trim()}`;
+}
+window.updateCourseDurationPreview = () => {
+  const s = document.getElementById('cStartDate')?.value;
+  const e = document.getElementById('cEndDate')?.value;
+  const prev = document.getElementById('courseDatePreview');
+  if (!prev) return;
+  if (s && e) { prev.textContent = getCourseStatusText(s,e); prev.classList.remove('hidden'); }
+  else { prev.classList.add('hidden'); }
+};
 
 // ── ADD / EDIT COURSE ─────────────────────────────────────────
+const COURSE_CATS = ['Computer Basics','Office Tools','Programming','Web Development','Graphic Design','Accounting','Networking','Database','Other'];
+
 window.openAddCourse = () => {
+  const catOpts = COURSE_CATS.map(c=>`<option>${c}</option>`).join('');
   showModal(`<h3 class="text-lg font-bold text-white mb-5">Create New Course</h3>
     <div class="space-y-3">
       <div><label class="lbl">Course Name</label><input id="cName" class="inp" placeholder="e.g. Web Development"/></div>
-      <div><label class="lbl">Subject / Description</label><input id="cSubject" class="inp" placeholder="e.g. HTML, CSS, JS"/></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Category</label>
+          <select id="cCategory" class="inp"><option value="">Select Category</option>${catOpts}</select>
+        </div>
+        <div><label class="lbl">Course Description</label><textarea id="cDescription" class="inp" rows="2" placeholder="Brief overview of what this course covers..."></textarea></div>
+        <div><label class="lbl">Course Features</label><input id="cFeatures" class="inp" placeholder="e.g. Live Classes, Projects, Certificate, Placement Support"/></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Start Date *</label><input id="cStartDate" class="inp" type="date" onchange="updateCourseDurationPreview()"/></div>
+        <div><label class="lbl">End Date *</label><input id="cEndDate" class="inp" type="date" onchange="updateCourseDurationPreview()"/></div>
+      </div>
+      <div id="courseDatePreview" class="hidden p-2 rounded-lg text-xs" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);color:#7dd3fc"></div>
       <div><label class="lbl">Course Banner (optional)</label><input type="file" accept="image/*" id="cBanner" class="inp py-2 text-xs"/></div>
       <button onclick="saveCourse(null)" class="btn btn-primary w-full justify-center mt-2">Create Course</button>
     </div>`);
@@ -951,21 +1247,39 @@ window.openAddCourse = () => {
 
 window.editCourse = (id) => {
   const c = myCourses.find(x => x.id === id); if (!c) return;
+  const catOpts = COURSE_CATS.map(cat=>`<option ${c.category===cat?'selected':''}>${cat}</option>`).join('');
+  const statusPreview = (c.startDate&&c.endDate) ? getCourseStatusText(c.startDate,c.endDate) : '';
   showModal(`<h3 class="text-lg font-bold text-white mb-5">Edit Course</h3>
     <div class="space-y-3">
       <div><label class="lbl">Course Name</label><input id="cName" class="inp" value="${c.name}"/></div>
-      <div><label class="lbl">Subject</label><input id="cSubject" class="inp" value="${c.subject||''}"/></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Category</label>
+          <select id="cCategory" class="inp"><option value="">Select Category</option>${catOpts}</select>
+        </div>
+        <div><label class="lbl">Course Description</label><textarea id="cDescription" class="inp" rows="2">${c.description||''}</textarea></div>
+        <div><label class="lbl">Course Features</label><input id="cFeatures" class="inp" value="${c.features||''}"/></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Start Date *</label><input id="cStartDate" class="inp" type="date" value="${c.startDate||''}" onchange="updateCourseDurationPreview()"/></div>
+        <div><label class="lbl">End Date *</label><input id="cEndDate" class="inp" type="date" value="${c.endDate||''}" onchange="updateCourseDurationPreview()"/></div>
+      </div>
+      <div id="courseDatePreview" class="${statusPreview?'':'hidden'} p-2 rounded-lg text-xs" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);color:#7dd3fc">${statusPreview}</div>
       <div><label class="lbl">New Banner (optional)</label><input type="file" accept="image/*" id="cBanner" class="inp py-2 text-xs"/></div>
-      <div class="text-xs text-slate-500">Join Code: <span class="font-mono text-sky-400">${c.joinCode}</span></div>
       <button onclick="saveCourse('${id}')" class="btn btn-primary w-full justify-center mt-2">Save Changes</button>
     </div>`);
 };
 
 window.saveCourse = async (id) => {
   const name = document.getElementById('cName').value.trim();
-  const subject = document.getElementById('cSubject').value.trim();
+  const category = document.getElementById('cCategory')?.value||'';
+  const description = document.getElementById('cDescription')?.value.trim()||'';
+  const features = document.getElementById('cFeatures')?.value.trim()||'';
+  const startDate = document.getElementById('cStartDate')?.value||'';
+  const endDate = document.getElementById('cEndDate')?.value||'';
   const bannerFile = document.getElementById('cBanner').files[0];
   if (!name) return toast('Course name required','error');
+  if (!startDate || !endDate) return toast('Start date and End date required','error');
+  if (endDate <= startDate) return toast('End date must be after start date','error');
   let bannerUrl = id ? (myCourses.find(c=>c.id===id)?.bannerUrl||'') : '';
   if (bannerFile) {
     toast('Uploading banner...','info');
@@ -976,11 +1290,11 @@ window.saveCourse = async (id) => {
   }
   const joinCode = id ? myCourses.find(c=>c.id===id)?.joinCode : Math.random().toString(36).slice(2,8).toUpperCase();
   if (id) {
-    await updateDoc(doc(db,'courses',id), {name,subject,bannerUrl,updatedAt:serverTimestamp()});
+    await updateDoc(doc(db,'courses',id), {name,category,description,features,startDate,endDate,bannerUrl,updatedAt:serverTimestamp()});
     toast('Course updated!','success');
   } else {
-    await addDoc(collection(db,'courses'), {name,subject,bannerUrl,joinCode,teacherId:session.userId,teacherName:session.name,createdAt:serverTimestamp()});
-    toast('Course created! Code: ' + joinCode,'success');
+    await addDoc(collection(db,'courses'), {name,category,description,features,startDate,endDate,bannerUrl,joinCode,teacherId:session.userId,teacherName:session.name,fees:0,selfEnrollEnabled:false,createdAt:serverTimestamp()});
+    toast('Course created!','success');
   }
   closeModal(); loadMyCourses();
 };
@@ -1339,17 +1653,17 @@ window.loadResults = async () => {
   if (selectedStudent) examAtts = examAtts.filter(a => a.studentId===selectedStudent);
   const tbody = document.getElementById('resultsBody');
   const allResults = [
-    ...tests.map(t => ({studentName:t.studentName,type:t.type,subject:t.subject,marks:t.marks,total:t.total})),
-    ...examAtts.map(a => ({studentName:a.studentName||a.studentId,type:'online',subject:a.examTitle||'MCQ',marks:a.score,total:a.total}))
+    ...tests.map(t => ({studentId:t.studentId,studentName:t.studentName,type:t.type,subject:t.subject,marks:t.marks,total:t.total})),
+    ...examAtts.map(a => ({studentId:a.studentId,studentName:a.studentName||a.studentId,type:'online',subject:a.examTitle||'MCQ',marks:a.score,total:a.total}))
   ];
-  if (!allResults.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-slate-600">No results found</td></tr>'; return; }
+  if (!allResults.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-slate-600">No results found</td></tr>'; return; }
   let totalPct = 0;
   tbody.innerHTML = allResults.map(r => {
     const pct = r.total ? ((r.marks/r.total)*100).toFixed(1) : 0;
     totalPct += parseFloat(pct);
     const grade = pct>=90?'A+':pct>=80?'A':pct>=70?'B+':pct>=60?'B':pct>=50?'C':'F';
     const typeBadge = {daily:'b-sky',monthly:'b-purple',final:'b-pink',online:'b-orange'}[r.type]||'b-sky';
-    return `<tr><td class="text-white text-xs font-medium">${r.studentName}</td><td><span class="badge ${typeBadge}">${r.type}</span></td><td class="text-slate-400 text-xs">${r.subject}</td><td class="text-sky-400 font-mono text-xs">${r.marks}/${r.total}</td><td><span class="badge ${pct>=75?'b-green':pct>=50?'b-orange':'b-red'}">${pct}%</span></td><td class="text-white font-bold text-xs">${grade}</td></tr>`;
+    return `<tr><td class="text-white text-xs font-medium">${r.studentName}</td><td><span class="badge ${typeBadge}">${r.type}</span></td><td class="text-slate-400 text-xs">${r.subject}</td><td class="text-sky-400 font-mono text-xs">${r.marks}/${r.total}</td><td><span class="badge ${pct>=75?'b-green':pct>=50?'b-orange':'b-red'}">${pct}%</span></td><td class="text-white font-bold text-xs">${grade}</td><td><button onclick="teacherGenMarksheet('${r.studentId}','${courseId}')" class="btn bp text-xs">🎓</button></td></tr>`;
   }).join('');
   const avgPct = (totalPct/allResults.length).toFixed(1);
   const avgEl = document.getElementById('classAvgBadge');
@@ -1536,111 +1850,6 @@ window.revokeCert = async (certId, studentName) => {
   loadIssuedCerts();
 };
 
-// ── TOPIC-WISE CLASSES ────────────────────────────────────────
-function populateTopicCourseFilter() {
-  document.getElementById('topicCourseFilter').innerHTML = '<option value="">Select Course</option>' + myCourses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-}
-
-window.loadTopics = async () => {
-  const courseId = document.getElementById('topicCourseFilter').value;
-  const el = document.getElementById('topicsList');
-  if (!courseId) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600">Select a course</div>'; return; }
-  const snap = await getDocs(query(collection(db,'topics'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
-  const topics = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  if (!topics.length) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600">No topics yet. Add your first topic/class!</div>'; return; }
-  el.innerHTML = topics.map((t,i) => `
-    <div class="topic-card">
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-start gap-3 flex-1 min-w-0">
-          <div class="w-9 h-9 rounded-xl bg-sky-400/15 border border-sky-400/20 flex items-center justify-center text-sky-400 font-bold text-sm flex-shrink-0">${t.order||i+1}</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-white font-semibold text-sm">${t.title}</p>
-            <p class="text-slate-500 text-xs mt-0.5">${t.description||''}</p>
-            <div class="flex flex-wrap gap-1.5 mt-2">
-              ${t.duration?`<span class="badge b-sky text-xs">⏱ ${t.duration} min</span>`:''}
-              ${t.date?`<span class="badge b-purple text-xs">📅 ${t.date}</span>`:''}
-              <span class="badge ${t.status==='completed'?'b-green':t.status==='ongoing'?'b-yellow':'b-orange'} text-xs">${t.status||'pending'}</span>
-            </div>
-            ${t.objectives?`<p class="text-slate-600 text-xs mt-1">🎯 ${t.objectives}</p>`:''}
-          </div>
-        </div>
-        <div class="flex gap-1.5 flex-shrink-0">
-          <button onclick="editTopic('${t.id}')" class="btn btn-sky text-xs">Edit</button>
-          <button onclick="deleteTopic('${t.id}')" class="btn btn-red text-xs">Del</button>
-        </div>
-      </div>
-    </div>`).join('');
-};
-
-window.openAddTopic = () => {
-  const courseId = document.getElementById('topicCourseFilter').value;
-  if (!courseId) return toast('Select a course first','error');
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Add Topic / Class</h3>
-    <div class="space-y-3">
-      <div><label class="lbl">Topic Title</label><input id="tpTitle" class="inp" placeholder="e.g. Introduction to Python"/></div>
-      <div><label class="lbl">Description</label><textarea id="tpDesc" class="inp" placeholder="What will be covered..."></textarea></div>
-      <div><label class="lbl">Learning Objectives</label><input id="tpObj" class="inp" placeholder="Students will learn..."/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Class Date</label><input id="tpDate" class="inp" type="date" value="${new Date().toISOString().split('T')[0]}"/></div>
-        <div><label class="lbl">Duration (min)</label><input id="tpDur" class="inp" type="number" value="60" min="10"/></div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Order / Week No.</label><input id="tpOrder" class="inp" type="number" value="1" min="1"/></div>
-        <div><label class="lbl">Status</label><select id="tpStatus" class="inp"><option value="pending">Pending</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option></select></div>
-      </div>
-      <button onclick="saveTopic(null)" class="btn btn-primary w-full justify-center mt-2">Add Topic</button>
-    </div>`);
-};
-
-window.editTopic = async (id) => {
-  const d = await getDoc(doc(db,'topics',id)); if (!d.exists()) return;
-  const t = d.data();
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Edit Topic</h3>
-    <div class="space-y-3">
-      <div><label class="lbl">Topic Title</label><input id="tpTitle" class="inp" value="${t.title}"/></div>
-      <div><label class="lbl">Description</label><textarea id="tpDesc" class="inp">${t.description||''}</textarea></div>
-      <div><label class="lbl">Learning Objectives</label><input id="tpObj" class="inp" value="${t.objectives||''}"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Class Date</label><input id="tpDate" class="inp" type="date" value="${t.date||''}"/></div>
-        <div><label class="lbl">Duration (min)</label><input id="tpDur" class="inp" type="number" value="${t.duration||60}"/></div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Order</label><input id="tpOrder" class="inp" type="number" value="${t.order||1}"/></div>
-        <div><label class="lbl">Status</label><select id="tpStatus" class="inp">
-          <option value="pending" ${t.status==='pending'?'selected':''}>Pending</option>
-          <option value="ongoing" ${t.status==='ongoing'?'selected':''}>Ongoing</option>
-          <option value="completed" ${t.status==='completed'?'selected':''}>Completed</option>
-        </select></div>
-      </div>
-      <button onclick="saveTopic('${id}')" class="btn btn-primary w-full justify-center mt-2">Save Changes</button>
-    </div>`);
-};
-
-window.saveTopic = async (id) => {
-  const title = document.getElementById('tpTitle').value.trim();
-  if (!title) return toast('Title required','error');
-  const courseId = document.getElementById('topicCourseFilter').value;
-  const courseName = myCourses.find(c=>c.id===courseId)?.name||'';
-  const data = {
-    title, description:document.getElementById('tpDesc').value.trim(),
-    objectives:document.getElementById('tpObj').value.trim(),
-    date:document.getElementById('tpDate').value,
-    duration:parseInt(document.getElementById('tpDur').value)||60,
-    order:parseInt(document.getElementById('tpOrder').value)||1,
-    status:document.getElementById('tpStatus').value,
-    courseId, courseName, teacherId:session.userId, teacherName:session.name
-  };
-  if (id) { await updateDoc(doc(db,'topics',id), {...data, updatedAt:serverTimestamp()}); toast('Topic updated!','success'); }
-  else { await addDoc(collection(db,'topics'), {...data, createdAt:serverTimestamp()}); toast('Topic added!','success'); }
-  closeModal(); loadTopics();
-};
-
-window.deleteTopic = async (id) => {
-  if (!confirm('Delete this topic?')) return;
-  await deleteDoc(doc(db,'topics',id));
-  toast('Deleted','success'); loadTopics();
-};
-
 // ── CLASS SCHEDULE ────────────────────────────────────────────
 function populateSchedCourseFilter() {
   document.getElementById('schedCourseFilter').innerHTML = '<option value="">Select Course</option>' + myCourses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
@@ -1664,23 +1873,53 @@ window.loadSchedule = async () => {
   }).join('');
   const listEl = document.getElementById('scheduleList');
   if (!slots.length) { listEl.innerHTML = '<div class="text-slate-600 text-xs text-center py-6">No schedule yet</div>'; return; }
+  // Load linked counts for all slots
+  const [hwSnap, matSnap, plSnap] = await Promise.all([
+    getDocs(query(collection(db,'homeworks'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'materials'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'playlists'), where('courseId','==',courseId), where('teacherId','==',session.userId)))
+  ]);
+  const hwBySchedule = {}, matBySchedule = {}, plBySchedule = {};
+  hwSnap.docs.forEach(d=>{ const sid=d.data().linkedScheduleId||d.data().scheduleId; if(sid){ hwBySchedule[sid]=(hwBySchedule[sid]||0)+1; }});
+  matSnap.docs.forEach(d=>{ const sid=d.data().linkedScheduleId||d.data().scheduleId; if(sid){ matBySchedule[sid]=(matBySchedule[sid]||0)+1; }});
+  plSnap.docs.forEach(d=>{ const sid=d.data().linkedScheduleId; if(sid){ plBySchedule[sid]=(plBySchedule[sid]||0)+1; }});
+
   const sorted = slots.sort((a,b) => {
     const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
     return dayOrder.indexOf(a.day)-dayOrder.indexOf(b.day)||a.startTime.localeCompare(b.startTime);
   });
-  listEl.innerHTML = sorted.map(s=>`
-    <div class="p-3 rounded-xl border border-sky-400/12 bg-sky-400/4 flex items-center justify-between gap-3">
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-0.5 flex-wrap">
-          <span class="badge b-sky text-xs">${s.day}</span>
-          <span class="text-white text-xs font-semibold">${s.topic||'Class'}</span>
-          <span class="badge b-purple text-xs">${s.type||'Lecture'}</span>
+  listEl.innerHTML = sorted.map(s=>{
+    const typeChips = (s.types?.length?s.types:[s.type||'Lecture']).map(t=>`<span class="px-1.5 py-0.5 rounded text-xs" style="background:rgba(56,189,248,0.12);color:#7dd3fc">${t}</span>`).join('');
+    const hwCnt = hwBySchedule[s.id]||0;
+    const matCnt = matBySchedule[s.id]||0;
+    const plCnt = plBySchedule[s.id]||0;
+    return `<div class="p-3 rounded-xl border border-sky-400/12 bg-sky-400/4">
+      <div class="flex items-start gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <span class="badge b-sky text-xs font-bold">${s.day}</span>
+            <span class="text-white text-xs font-semibold">${s.topic||'Class'}</span>
+          </div>
+          <p class="text-slate-400 text-xs mb-1">⏰ ${s.startTime}–${s.endTime}${s.batchName?' · 👥 '+s.batchName:''}</p>
+          ${s.linkedTitleName ? `<p class="text-sky-400 text-xs mb-1">📋 Curriculum: ${s.linkedTitleName}</p>` : ''}
+          <div class="flex flex-wrap gap-1 mb-1">${typeChips}</div>
+          ${s.notes ? `<p class="text-slate-600 text-xs italic">${s.notes}</p>` : ''}
+          <!-- Linked counts -->
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            <button onclick="filterSectionBySchedule('homework','${s.id}','${(s.topic||'').replace(/'/g,"\\'")}','${courseId}')" class="text-xs px-2 py-1 rounded-lg transition-all ${hwCnt?'':'opacity-50'}" style="background:rgba(167,139,250,0.12);color:#c4b5fd;border:1px solid rgba(167,139,250,0.25)">📝 HW ${hwCnt?`<span class="font-bold">(${hwCnt})</span>`:''}</button>
+            <button onclick="filterSectionBySchedule('materials','${s.id}','${(s.topic||'').replace(/'/g,"\\'")}','${courseId}')" class="text-xs px-2 py-1 rounded-lg transition-all ${matCnt?'':'opacity-50'}" style="background:rgba(56,189,248,0.12);color:#7dd3fc;border:1px solid rgba(56,189,248,0.25)">📎 Materials ${matCnt?`<span class="font-bold">(${matCnt})</span>`:''}</button>
+            <button onclick="filterSectionBySchedule('videos','${s.id}','${(s.topic||'').replace(/'/g,"\\'")}','${courseId}')" class="text-xs px-2 py-1 rounded-lg transition-all ${plCnt?'':'opacity-50'}" style="background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25)">🎬 Videos ${plCnt?`<span class="font-bold">(${plCnt})</span>`:''}</button>
+            <button onclick="schedQuickHW('${s.id}','${(s.topic||'').replace(/'/g,"\\'")}','${s.courseId}')" class="text-xs px-2 py-1 rounded-lg" style="background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.2)">+ Add HW</button>
+            <button onclick="schedQuickMaterial('${s.id}','${(s.topic||'').replace(/'/g,"\\'")}','${s.courseId}')" class="text-xs px-2 py-1 rounded-lg" style="background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.2)">+ Add Mat</button>
+          </div>
         </div>
-        <p class="text-slate-500 text-xs">${s.startTime}–${s.endTime} · ${s.room||'Online'}</p>
-        ${s.notes?`<p class="text-slate-600 text-xs italic">${s.notes}</p>`:''}
+        <div class="flex flex-col gap-1">
+          <button onclick="openAddSchedule('${s.id}')" class="btn btn-sky text-xs">✏️</button>
+          <button onclick="deleteSchedule('${s.id}')" class="btn btn-red text-xs">🗑</button>
+        </div>
       </div>
-      <button onclick="deleteSchedule('${s.id}')" class="btn btn-red text-xs flex-shrink-0">Del</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 };
 
 async function loadTodayClasses() {
@@ -1696,42 +1935,203 @@ async function loadTodayClasses() {
   } catch(e) {}
 }
 
-window.openAddSchedule = () => {
+window.openAddSchedule = async (editId) => {
   const courseId = document.getElementById('schedCourseFilter').value;
   if (!courseId) return toast('Select a course first','error');
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Add Class Slot</h3>
+
+  // Load curriculum lessons (titles) for linking
+  const tSnap = await getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
+  const titles = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  const titleOpts = titles.map(t=>`<option value="${t.id}" data-name="${t.title}">${t.moduleName ? t.moduleName+' → ':''} ${t.title}</option>`).join('');
+
+  // Load batches for this course to pre-fill timing
+  const bSnap = await getDocs(query(collection(db,'batches'), where('courseId','==',courseId)));
+  const batches = bSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const batchOpts = batches.map(b=>`<option value="${b.id}" data-from="${b.timeFrom||''}" data-to="${b.timeTo||''}">${b.name}${b.timeFrom?' ('+b.timeFrom+'–'+b.timeTo+')':''}</option>`).join('');
+
+  // If editing, load existing data
+  let ex = {};
+  if (editId) {
+    const ed = await getDoc(doc(db,'schedule',editId));
+    if (ed.exists()) ex = ed.data();
+  }
+
+  const CLASS_TYPES = ['Lecture','Lab / Practical','Revision','Doubt Session','Demo Class','Project Work','Guest Lecture','Test / Quiz','Presentation','Workshop'];
+
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">${editId?'Edit':'Add'} Class Slot</h3>
     <div class="space-y-3">
-      <div><label class="lbl">Topic / Class Name</label><input id="scTopic" class="inp" placeholder="e.g. Python Basics – Day 1"/></div>
-      <div><label class="lbl">Day</label><select id="scDay" class="inp"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Start Time</label><input id="scStart" class="inp" type="time" value="09:00"/></div>
-        <div><label class="lbl">End Time</label><input id="scEnd" class="inp" type="time" value="10:00"/></div>
+      <div>
+        <label class="lbl">📋 Curriculum Topic (Link)</label>
+        <select id="scLinkedTitle" class="inp" onchange="onLinkedTitleChange()">
+          <option value="">— Custom / No Link —</option>${titleOpts}
+        </select>
+        <p class="text-sky-400/60 text-xs mt-1">Ek curriculum title 2-3 din chal sakta hai — same title alag alag dates pe select karo</p>
+      </div>
+      <div>
+        <label class="lbl">Class Name / Label *</label>
+        <input id="scTopic" class="inp" value="${ex.topic||''}" placeholder="e.g. HTML Basics – Day 1"/>
       </div>
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Room / Platform</label><input id="scRoom" class="inp" placeholder="e.g. Room 101 / Zoom"/></div>
-        <div><label class="lbl">Type</label><select id="scType" class="inp"><option>Lecture</option><option>Lab</option><option>Practical</option><option>Revision</option><option>Doubt Session</option></select></div>
+        <div>
+          <label class="lbl">Day</label>
+          <select id="scDay" class="inp">
+            ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${ex.day===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="lbl">📅 Batch (auto-fill timing)</label>
+          <select id="scBatch" class="inp" onchange="onBatchChange()">
+            <option value="">No Batch</option>${batchOpts}
+          </select>
+        </div>
       </div>
-      <div><label class="lbl">Notes (optional)</label><input id="scNotes" class="inp" placeholder="Any additional info"/></div>
-      <button onclick="saveSchedule()" class="btn btn-primary w-full justify-center mt-2">Add Slot</button>
-    </div>`);
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">⏰ Start Time</label><input id="scStart" class="inp" type="time" value="${ex.startTime||'09:00'}"/></div>
+        <div><label class="lbl">⏰ End Time</label><input id="scEnd" class="inp" type="time" value="${ex.endTime||'10:00'}"/></div>
+      </div>
+      <div>
+        <label class="lbl">Class Type</label>
+        <div class="grid grid-cols-2 gap-1.5" id="scTypeGrid">
+          ${CLASS_TYPES.map(t=>`<label class="flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)" id="sctype_lbl_${t.replace(/[^a-z]/gi,'_')}">
+            <input type="checkbox" id="sctype_${t.replace(/[^a-z]/gi,'_')}" value="${t}" class="w-3.5 h-3.5 accent-sky-400" ${(ex.types||[ex.type]).includes(t)?'checked':''}/>
+            <span class="text-xs text-slate-300">${t}</span>
+          </label>`).join('')}
+        </div>
+      </div>
+      <div><label class="lbl">Notes</label><input id="scNotes" class="inp" value="${ex.notes||''}" placeholder="Any additional info"/></div>
+    </div>
+    <button onclick="saveSchedule('${editId||''}')" class="btn btn-primary w-full justify-center mt-3">${editId?'💾 Save Changes':'➕ Add Slot'}</button>`);
+
+  // If editing and had linked title, pre-select
+  if (ex.linkedTitleId) {
+    const sel = document.getElementById('scLinkedTitle');
+    if (sel) sel.value = ex.linkedTitleId;
+  }
 };
 
-window.saveSchedule = async () => {
+window.onLinkedTitleChange = () => {
+  const sel = document.getElementById('scLinkedTitle');
+  const opt = sel?.options[sel.selectedIndex];
+  if (opt?.value && opt.dataset.name) {
+    const topicEl = document.getElementById('scTopic');
+    if (topicEl && !topicEl.value) topicEl.value = opt.dataset.name;
+  }
+};
+
+window.onBatchChange = () => {
+  const sel = document.getElementById('scBatch');
+  const opt = sel?.options[sel.selectedIndex];
+  if (opt?.dataset.from) {
+    document.getElementById('scStart').value = opt.dataset.from;
+    document.getElementById('scEnd').value = opt.dataset.to||'';
+  }
+};
+
+window.saveSchedule = async (editId) => {
   const topic = document.getElementById('scTopic').value.trim();
   const day = document.getElementById('scDay').value;
   const startTime = document.getElementById('scStart').value;
   const endTime = document.getElementById('scEnd').value;
-  if (!topic || !startTime) return toast('Fill topic and times','error');
+  if (!topic || !startTime) return toast('Fill class name and start time','error');
   const courseId = document.getElementById('schedCourseFilter').value;
   const courseName = myCourses.find(c=>c.id===courseId)?.name||'';
-  await addDoc(collection(db,'schedule'), {
+  const linkedTitleSel = document.getElementById('scLinkedTitle');
+  const linkedTitleId = linkedTitleSel?.value||'';
+  const linkedTitleName = linkedTitleId ? (linkedTitleSel.options[linkedTitleSel.selectedIndex]?.dataset.name||'') : '';
+  // Collect multi-type checkboxes
+  const CLASS_TYPES = ['Lecture','Lab_Practical','Revision','Doubt_Session','Demo_Class','Project_Work','Guest_Lecture','Test_Quiz','Presentation','Workshop'];
+  const types = [];
+  document.querySelectorAll('#scTypeGrid input[type=checkbox]:checked').forEach(cb => types.push(cb.value));
+  const batchSel = document.getElementById('scBatch');
+  const batchId = batchSel?.value||'';
+  const batchName = batchId ? batchSel.options[batchSel.selectedIndex]?.text||'' : '';
+  const data = {
     topic, day, startTime, endTime,
-    room:document.getElementById('scRoom').value.trim(),
-    type:document.getElementById('scType').value,
-    notes:document.getElementById('scNotes').value.trim(),
-    courseId, courseName, teacherId:session.userId, teacherName:session.name, createdAt:serverTimestamp()
+    types, type: types[0]||'Lecture',
+    notes: document.getElementById('scNotes').value.trim(),
+    linkedTitleId, linkedTitleName,
+    batchId, batchName,
+    courseId, courseName, teacherId:session.userId, teacherName:session.name, updatedAt:serverTimestamp()
+  };
+  if (editId) {
+    await updateDoc(doc(db,'schedule',editId), data);
+    toast('Schedule updated!','success');
+  } else {
+    await addDoc(collection(db,'schedule'), {...data, createdAt:serverTimestamp()});
+    toast('Class slot added!','success');
+  }
+  closeModal(); loadSchedule(); loadTodayClasses();
+};
+
+// Quick Homework from Schedule
+window.schedQuickHW = (schedId, topic, courseId) => {
+  const today = new Date().toISOString().split('T')[0];
+  showModal(`<h3 class="text-lg font-bold text-white mb-1">📝 Add Homework</h3>
+    <p class="text-slate-500 text-xs mb-4">From schedule: <span class="text-sky-400">${topic}</span></p>
+    <div class="space-y-3">
+      <div><label class="lbl">Homework Title *</label><input id="qhTitle" class="inp" value="${topic}" placeholder="Homework title"/></div>
+      <div><label class="lbl">Instructions / Questions</label><textarea id="qhInstr" class="inp" rows="3" placeholder="Write homework instructions or paste questions..."></textarea></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Due Date</label><input id="qhDue" class="inp" type="date" value="${today}"/></div>
+        <div><label class="lbl">Max Marks</label><input id="qhMarks" class="inp" type="number" value="10" min="1"/></div>
+      </div>
+    </div>
+    <button onclick="saveSchedHW('${schedId}','${courseId}')" class="btn btn-primary w-full justify-center mt-4">Save Homework</button>`);
+};
+
+window.saveSchedHW = async (schedId, courseId) => {
+  const title = document.getElementById('qhTitle').value.trim();
+  const instructions = document.getElementById('qhInstr').value.trim();
+  const dueDate = document.getElementById('qhDue').value;
+  const maxMarks = parseInt(document.getElementById('qhMarks').value)||10;
+  if (!title) return toast('Title required','error');
+  const course = myCourses.find(c=>c.id===courseId);
+  const ref = await addDoc(collection(db,'homeworks'), {
+    title, instructions, dueDate, maxMarks, courseId, courseName: course?.name||'',
+    teacherId: session.userId, teacherName: session.name,
+    scheduleId: schedId, type:'schedule',
+    createdAt: serverTimestamp()
   });
-  toast('Schedule slot added!','success'); closeModal(); loadSchedule(); loadTodayClasses();
+  // Mark schedule with homeworkRef
+  await updateDoc(doc(db,'schedule',schedId), {homeworkRef: ref.id, homeworkTitle: title});
+  closeModal();
+  toast('Homework added!','success');
+  loadSchedule();
+};
+
+// Quick Material from Schedule
+window.schedQuickMaterial = (schedId, topic, courseId) => {
+  showModal(`<h3 class="text-lg font-bold text-white mb-1">📎 Add Class Material</h3>
+    <p class="text-slate-500 text-xs mb-4">From schedule: <span class="text-sky-400">${topic}</span></p>
+    <div class="space-y-3">
+      <div><label class="lbl">Material Title *</label><input id="qmTitle" class="inp" value="${topic}" placeholder="Material title"/></div>
+      <div><label class="lbl">Description (optional)</label><textarea id="qmDesc" class="inp" rows="2" placeholder="Brief description..."></textarea></div>
+      <div><label class="lbl">Material Link / URL (optional)</label><input id="qmUrl" class="inp" type="url" placeholder="https://drive.google.com/..."/></div>
+      <div><label class="lbl">Type</label>
+        <select id="qmType" class="inp">
+          <option>PDF</option><option>Notes</option><option>Slides</option><option>Video Link</option><option>Assignment</option><option>Reference</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="saveSchedMaterial('${schedId}','${courseId}')" class="btn btn-primary w-full justify-center mt-4">Save Material</button>`);
+};
+
+window.saveSchedMaterial = async (schedId, courseId) => {
+  const title = document.getElementById('qmTitle').value.trim();
+  const description = document.getElementById('qmDesc').value.trim();
+  const url = document.getElementById('qmUrl').value.trim();
+  const type = document.getElementById('qmType').value;
+  if (!title) return toast('Title required','error');
+  const course = myCourses.find(c=>c.id===courseId);
+  const ref = await addDoc(collection(db,'materials'), {
+    title, description, url, type, courseId, courseName: course?.name||'',
+    teacherId: session.userId, teacherName: session.name,
+    scheduleId: schedId, createdAt: serverTimestamp()
+  });
+  await updateDoc(doc(db,'schedule',schedId), {materialRef: ref.id, materialTitle: title});
+  closeModal();
+  toast('Material added!','success');
+  loadSchedule();
 };
 
 window.deleteSchedule = async (id) => {
@@ -1740,36 +2140,67 @@ window.deleteSchedule = async (id) => {
   toast('Deleted','success'); loadSchedule();
 };
 
-// ── CLASS MATERIALS ───────────────────────────────────────────
+// Navigate to a section and filter by schedule slot
+window.filterSectionBySchedule = (section, scheduleId, scheduleTopic, courseId) => {
+  showSec(section);
+  // Set course filter
+  const courseFilterMap = {homework:'hwCourseFilter', materials:'matCourseFilter', videos:'videoCourseFilter'};
+  const schedFilterMap = {homework:'hwSchedFilter', materials:'matSchedFilter', videos:'videoSchedFilter'};
+  const cfEl = document.getElementById(courseFilterMap[section]);
+  if (cfEl) { cfEl.value = courseId; }
+  // After course is set, populate schedule filter and set value
+  setTimeout(async () => {
+    // Populate schedule dropdown for the section
+    await populateSchedFilters(section, courseId);
+    const sfEl = document.getElementById(schedFilterMap[section]);
+    if (sfEl) sfEl.value = scheduleId;
+    // Load with filter
+    if (section === 'homework') loadHomeworks();
+    else if (section === 'materials') loadMaterials();
+    else if (section === 'videos') loadPlaylists();
+  }, 100);
+};
+
+// Populate schedule dropdown for a given section
+async function populateSchedFilters(section, courseId) {
+  const schedFilterMap = {homework:'hwSchedFilter', materials:'matSchedFilter', videos:'videoSchedFilter'};
+  const el = document.getElementById(schedFilterMap[section]);
+  if (!el || !courseId) return;
+  const snap = await getDocs(query(collection(db,'schedule'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
+  const slots = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    const ord=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    return ord.indexOf(a.day)-ord.indexOf(b.day)||a.startTime.localeCompare(b.startTime);
+  });
+  el.innerHTML = '<option value="">All Classes</option>' + slots.map(s=>`<option value="${s.id}">${s.day} – ${s.topic||'Class'} (${s.startTime})</option>`).join('');
+}
+
+
 async function populateMatFilters() {
   document.getElementById('matCourseFilter').innerHTML = '<option value="">Select Course</option>' + myCourses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('matTopicFilter').innerHTML = '<option value="">All Topics</option>';
 }
 
 window.loadMaterials = async () => {
   const courseId = document.getElementById('matCourseFilter').value;
-  const topicFilter = document.getElementById('matTopicFilter').value;
+  const schedId = document.getElementById('matSchedFilter')?.value||'';
   const el = document.getElementById('materialsList');
   if (!courseId) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600 col-span-full">Select a course</div>'; return; }
-  const tSnap = await getDocs(query(collection(db,'topics'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
-  const topics = tSnap.docs.map(d=>d.data());
-  document.getElementById('matTopicFilter').innerHTML = '<option value="">All Topics</option>' + topics.map(t=>`<option value="${t.title}">${t.title}</option>`).join('');
-  const snap = topicFilter ?
-    await getDocs(query(collection(db,'materials'), where('courseId','==',courseId), where('topic','==',topicFilter))) :
-    await getDocs(query(collection(db,'materials'), where('courseId','==',courseId)));
-  const mats = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+  const snap = await getDocs(query(collection(db,'materials'), where('courseId','==',courseId)));
+  let mats = snap.docs.map(d=>({id:d.id,...d.data()}));
+  if (schedId) mats = mats.filter(m => (m.linkedScheduleId||m.scheduleId) === schedId);
+  mats.sort((a,b)=>{
     const da = a.createdAt?.toDate?a.createdAt.toDate():new Date(0);
     const db2 = b.createdAt?.toDate?b.createdAt.toDate():new Date(0);
     return db2-da;
   });
-  if (!mats.length) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600 col-span-full">No materials uploaded yet</div>'; return; }
-  const typeIcon = {pdf:'📄',video:'🎬',image:'🖼',link:'🔗',doc:'📝',other:'📎'};
+  if (!mats.length) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600 col-span-full">'+(schedId?'No materials linked to this class slot.':'No materials uploaded yet')+'</div>'; return; }
+  const typeIcon = {pdf:'📄',notes:'📝',slides:'🖼',video:'🎬',link:'🔗',assignment:'📋',excel:'📊',zip:'🗜',other:'📁',doc:'📝'};
   el.innerHTML = mats.map(m=>`
     <div class="mat-card">
       <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-sky-400/10 border border-sky-400/15">${typeIcon[m.type]||'📎'}</div>
       <div class="flex-1 min-w-0">
         <p class="text-white text-sm font-semibold truncate">${m.title}</p>
         <p class="text-slate-500 text-xs">${m.topic||'General'} · <span class="badge b-sky text-xs">${m.type||'file'}</span></p>
+        ${m.linkedScheduleTopic?`<p class="text-emerald-400/80 text-xs mt-0.5">📅 ${m.linkedScheduleTopic}</p>`:''}
         ${m.description?`<p class="text-slate-600 text-xs italic">${m.description}</p>`:''}
       </div>
       <div class="flex gap-1.5 flex-shrink-0">
@@ -1779,33 +2210,63 @@ window.loadMaterials = async () => {
     </div>`).join('');
 };
 
-window.openAddMaterial = () => {
+window.openAddMaterial = async () => {
   const courseId = document.getElementById('matCourseFilter').value;
   if (!courseId) return toast('Select a course first','error');
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Upload Class Material</h3>
+  // Load curriculum lessons + schedule slots for linking
+  const [tSnap, sSnap] = await Promise.all([
+    getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'schedule'), where('courseId','==',courseId), where('teacherId','==',session.userId)))
+  ]);
+  const titles = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  const schedSlots = sSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    const ord=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    return ord.indexOf(a.day)-ord.indexOf(b.day)||a.startTime.localeCompare(b.startTime);
+  });
+  const titleOpts = titles.map(t=>`<option value="${t.id}" data-name="${t.title}">${t.moduleName?t.moduleName+' → ':''}${t.title}</option>`).join('');
+  const schedOpts = schedSlots.map(s=>`<option value="${s.id}" data-topic="${s.topic||''}">${s.day} – ${s.topic||'Class'} (${s.startTime})</option>`).join('');
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">📎 Upload Class Material</h3>
     <div class="space-y-3">
-      <div><label class="lbl">Title</label><input id="matTitle" class="inp" placeholder="e.g. Python Basics Notes"/></div>
+      <div><label class="lbl">Title *</label><input id="matTitle" class="inp" placeholder="e.g. Python Basics Notes"/></div>
+      ${schedOpts?`<div><label class="lbl">📅 Link Class Schedule</label><select id="matLinkedSched" class="inp" onchange="if(this.value){const o=this.options[this.selectedIndex];document.getElementById('matTopic').value=o.dataset.topic||''}"><option value="">— No Schedule Link —</option>${schedOpts}</select></div>`:''}
+      ${titleOpts?`<div><label class="lbl">📋 Link Curriculum Topic</label><select id="matLinkedTitle" class="inp" onchange="if(this.value){const o=this.options[this.selectedIndex];if(!document.getElementById('matTopic').value)document.getElementById('matTopic').value=o.dataset.name||''}"><option value="">— No Link —</option>${titleOpts}</select></div>`:''}
       <div><label class="lbl">Topic / Chapter</label><input id="matTopic" class="inp" placeholder="e.g. Introduction to Python"/></div>
-      <div><label class="lbl">Type</label><select id="matType" class="inp" onchange="toggleMatUrl()">
-        <option value="link">External Link / YouTube</option>
-        <option value="pdf">PDF Document</option>
-        <option value="video">Video File</option>
-        <option value="image">Image</option>
-        <option value="doc">Word/Doc</option>
-        <option value="other">Other File</option>
-      </select></div>
-      <div id="matUrlDiv"><label class="lbl">URL / Link</label><input id="matUrl" class="inp" placeholder="https://..."/></div>
-      <div id="matFileDiv" class="hidden"><label class="lbl">Upload File (via Cloudinary)</label><input type="file" id="matFile" class="inp py-2 text-xs"/></div>
-      <div><label class="lbl">Description (optional)</label><input id="matDesc" class="inp" placeholder="Brief description"/></div>
-      <button onclick="saveMaterial()" class="btn btn-primary w-full justify-center mt-2">Save Material</button>
+      <div><label class="lbl">Material Type</label>
+        <div class="grid grid-cols-3 gap-1.5" id="matTypeGrid">
+          ${[['📄','PDF','pdf'],['📝','Notes','notes'],['🖼','Slides','slides'],['🎬','Video','video'],['🔗','Link / YouTube','link'],['📋','Assignment','assignment'],['📊','Excel / Data','excel'],['🗜','ZIP / Archive','zip'],['📁','Other File','other']].map(([ico,lbl,val])=>`<label class="flex items-center gap-1.5 p-2 rounded-lg cursor-pointer text-xs" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)"><input type="radio" name="matTypeR" value="${val}" class="accent-sky-400" ${val==='pdf'?'checked':''}>${ico} ${lbl}</label>`).join('')}
+        </div>
+      </div>
+      <div id="matUrlBox"><label class="lbl">URL / Link</label><input id="matUrl" class="inp" placeholder="https://..."/></div>
+      <div id="matFileBox"><label class="lbl">📁 Upload File (Firebase Storage)</label>
+        <input type="file" id="matFile" class="inp py-2 text-xs" accept="*/*" onchange="updateMatFileLabel()"/>
+        <div id="matUploadProg" class="hidden mt-1.5"><div class="h-1.5 rounded-full bg-slate-700 overflow-hidden"><div id="matProgBar" class="h-full bg-sky-400 transition-all" style="width:0%"></div></div><p id="matProgLabel" class="text-sky-400 text-xs mt-1">Uploading...</p></div>
+      </div>
+      <div><label class="lbl">Description</label><textarea id="matDesc" class="inp" rows="2" placeholder="Brief description..."></textarea></div>
+      <button onclick="saveMaterial()" class="btn btn-primary w-full justify-center mt-2" id="matSaveBtn">💾 Save Material</button>
     </div>`);
+  // Show/hide url vs file based on type selection
+  document.getElementById('matTypeGrid').addEventListener('change', () => {
+    const v = document.querySelector('input[name=matTypeR]:checked')?.value||'pdf';
+    const needsFile = !['link'].includes(v);
+    document.getElementById('matUrlBox').classList.toggle('hidden', needsFile);
+    document.getElementById('matFileBox').classList.toggle('hidden', !needsFile);
+  });
+  // Initial: PDF selected → show file
+  document.getElementById('matUrlBox').classList.add('hidden');
+  // Pre-select active schedule filter
+  const activeSched = document.getElementById('matSchedFilter')?.value||'';
+  if (activeSched) {
+    const s = document.getElementById('matLinkedSched');
+    if (s) { s.value = activeSched; const o=s.options[s.selectedIndex]; if(o?.dataset.topic) document.getElementById('matTopic').value=o.dataset.topic; }
+  }
 };
 
-window.toggleMatUrl = () => {
-  const type = document.getElementById('matType')?.value;
-  const needsUpload = ['pdf','image','doc','video','other'].includes(type);
-  document.getElementById('matUrlDiv').classList.toggle('hidden', needsUpload);
-  document.getElementById('matFileDiv').classList.toggle('hidden', !needsUpload);
+window.updateMatFileLabel = () => {
+  const f = document.getElementById('matFile')?.files[0];
+  if (f) {
+    const p = document.getElementById('matProgLabel');
+    if (p) p.textContent = 'Selected: '+f.name+' ('+Math.round(f.size/1024)+'KB)';
+  }
 };
 
 window.saveMaterial = async () => {
@@ -1813,20 +2274,57 @@ window.saveMaterial = async () => {
   if (!title) return toast('Title required','error');
   const courseId = document.getElementById('matCourseFilter').value;
   const courseName = myCourses.find(c=>c.id===courseId)?.name||'';
-  const type = document.getElementById('matType').value;
+  const type = document.querySelector('input[name=matTypeR]:checked')?.value||'pdf';
+  const linkedTitleSel = document.getElementById('matLinkedTitle');
+  const linkedTitleId = linkedTitleSel?.value||'';
+  const linkedTitleName = linkedTitleId ? linkedTitleSel.options[linkedTitleSel.selectedIndex]?.dataset.name||'' : '';
+  const linkedSchedSel = document.getElementById('matLinkedSched');
+  const linkedScheduleId = linkedSchedSel?.value||'';
+  const linkedScheduleTopic = linkedScheduleId ? (linkedSchedSel.options[linkedSchedSel.selectedIndex]?.dataset.topic||'') : '';
+
   let url = document.getElementById('matUrl')?.value.trim()||'';
+  let storagePath = '';
   const fileInput = document.getElementById('matFile');
-  if (fileInput && fileInput.files[0]) {
-    toast('Uploading file...','info');
-    const fd = new FormData(); fd.append('file',fileInput.files[0]); fd.append('upload_preset','ml_default');
-    const res = await fetch('https://api.cloudinary.com/v1_1/dbfdguefj/raw/upload',{method:'POST',body:fd});
-    const data = await res.json();
-    if (data.secure_url) url = data.secure_url; else return toast('Upload failed','error');
+  const file = fileInput?.files[0];
+
+  if (type !== 'link' && file) {
+    // Firebase Storage upload
+    const btn = document.getElementById('matSaveBtn');
+    if (btn) btn.disabled = true;
+    const progBox = document.getElementById('matUploadProg');
+    const progBar = document.getElementById('matProgBar');
+    const progLabel = document.getElementById('matProgLabel');
+    progBox?.classList.remove('hidden');
+    try {
+      const ext = file.name.split('.').pop();
+      storagePath = `materials/${courseId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const sRef = storageRef(storage, storagePath);
+      if (progBar) progBar.style.width = '40%';
+      if (progLabel) progLabel.textContent = 'Uploading '+file.name+'...';
+      const snap = await uploadBytes(sRef, file);
+      if (progBar) progBar.style.width = '80%';
+      url = await getDownloadURL(snap.ref);
+      if (progBar) progBar.style.width = '100%';
+      if (progLabel) progLabel.textContent = '✅ Upload complete!';
+    } catch(e) {
+      console.error(e); toast('Upload failed: '+e.message,'error');
+      if (btn) btn.disabled = false;
+      return;
+    }
+    if (btn) btn.disabled = false;
+  } else if (type === 'link' && !url) {
+    return toast('Paste a URL for link type','error');
   }
+
   await addDoc(collection(db,'materials'), {
-    title, topic:document.getElementById('matTopic').value.trim(), type, url,
-    description:document.getElementById('matDesc').value.trim(),
-    courseId, courseName, teacherId:session.userId, teacherName:session.name, createdAt:serverTimestamp()
+    title, topic: document.getElementById('matTopic').value.trim(),
+    type, url, storagePath,
+    linkedTitleId, linkedTitleName,
+    linkedScheduleId, linkedScheduleTopic,
+    description: document.getElementById('matDesc').value.trim(),
+    courseId, courseName,
+    teacherId:session.userId, teacherName:session.name,
+    createdAt:serverTimestamp()
   });
   toast('Material saved!','success'); closeModal(); loadMaterials();
 };
@@ -1840,6 +2338,47 @@ window.deleteMaterial = async (id) => {
 function populateHwCourseFilter() {
   document.getElementById('hwCourseFilter').innerHTML = '<option value="">Select Course</option>' + myCourses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 }
+
+// Course change → auto-populate schedule filter dropdowns
+window.onHwCourseChange = async () => {
+  document.getElementById('hwSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  const courseId = document.getElementById('hwCourseFilter').value;
+  if (courseId) await populateSchedFilters('homework', courseId);
+  loadHomeworks();
+};
+window.onMatCourseChange = async () => {
+  document.getElementById('matSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  const courseId = document.getElementById('matCourseFilter').value;
+  if (courseId) await populateSchedFilters('materials', courseId);
+  loadMaterials();
+};
+window.onVideoCourseChange = async () => {
+  document.getElementById('videoSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  const courseId = document.getElementById('videoCourseFilter').value;
+  if (courseId) await populateSchedFilters('videos', courseId);
+  loadPlaylists();
+};
+
+window.onHwCourseChange = async () => {
+  const courseId = document.getElementById('hwCourseFilter').value;
+  document.getElementById('hwSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  if (courseId) await populateSchedFilters('homework', courseId);
+  loadHomeworks();
+};
+
+window.onMatCourseChange = async () => {
+  const courseId = document.getElementById('matCourseFilter').value;
+  document.getElementById('matSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  if (courseId) await populateSchedFilters('materials', courseId);
+  loadMaterials();
+};
+
+window.onVideoCourseChange = async () => {
+  const courseId = document.getElementById('videoCourseFilter').value;
+  document.getElementById('videoSchedFilter').innerHTML = '<option value="">All Classes</option>';
+  if (courseId) await populateSchedFilters('videos', courseId);
+  loadPlaylists();
+};
 
 function listenHomeworkActivity() {
   if (hwUnsub) hwUnsub();
@@ -1862,11 +2401,13 @@ function listenHomeworkActivity() {
 window.loadHomeworks = async () => {
   const courseId = document.getElementById('hwCourseFilter').value;
   const date = document.getElementById('hwDateFilter').value;
+  const schedId = document.getElementById('hwSchedFilter')?.value||'';
   const el = document.getElementById('hwList');
   if (!courseId) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600">Select a course to view homeworks</div>'; return; }
   const snap = await getDocs(query(collection(db,'homeworks'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
   let hws = snap.docs.map(d=>({id:d.id,...d.data()}));
   if (date) hws = hws.filter(h => h.date === date);
+  if (schedId) hws = hws.filter(h => (h.linkedScheduleId||h.scheduleId) === schedId);
   hws.sort((a,b) => (b.date||'').localeCompare(a.date||''));
   if (!hws.length) { el.innerHTML = '<div class="glass-card p-6 text-center text-slate-600">No homeworks found. Create one!</div>'; return; }
   const rows = await Promise.all(hws.map(async hw => {
@@ -1886,6 +2427,7 @@ window.loadHomeworks = async () => {
           </div>
           <p class="text-slate-500 text-xs">${hw.courseName} · ${subs.length} submissions · Avg: ${avg}${avg!=='-'?'%':''}</p>
           ${hw.topic?`<p class="text-slate-600 text-xs">📌 Topic: ${hw.topic}</p>`:''}
+          ${hw.linkedScheduleId||hw.scheduleId?`<p class="text-xs mt-0.5" style="color:#6ee7b7">📅 ${hw.linkedScheduleName||hw.scheduleTopic||'Schedule Linked'}</p>`:''}
         </div>
         <div class="flex flex-wrap gap-1.5 flex-shrink-0">
           <button onclick="viewHwSubmissions('${hw.id}')" class="btn btn-pink text-xs">Submissions (${subs.length})</button>
@@ -1903,24 +2445,89 @@ window.loadHomeworks = async () => {
 };
 
 let hwQCount = 0;
-window.openCreateHomework = () => {
+window.openCreateHomework = async () => {
   const courseId = document.getElementById('hwCourseFilter').value;
   if (!courseId) return toast('Select a course first','error');
   hwQCount = 0;
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Create Daily Homework MCQ</h3>
+  const today = new Date().toISOString().split('T')[0];
+  // Load curriculum lessons and schedule slots
+  const [tSnap, sSnap] = await Promise.all([
+    getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'schedule'), where('courseId','==',courseId), where('teacherId','==',session.userId)))
+  ]);
+  const titles = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  const titleOpts = titles.map(t=>`<option value="${t.id}" data-name="${t.title}">${t.moduleName?t.moduleName+' → ':''}${t.title}</option>`).join('');
+  const schedSlots = sSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    const ord=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    return ord.indexOf(a.day)-ord.indexOf(b.day)||a.startTime.localeCompare(b.startTime);
+  });
+  const schedOpts = schedSlots.map(s=>`<option value="${s.id}" data-name="${s.day+' – '+(s.topic||'Class')}">${s.day} – ${s.topic||'Class'} (${s.startTime})</option>`).join('');
+  // Pre-select schedule if filter is active
+  const activeSchedId = document.getElementById('hwSchedFilter')?.value||'';
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">📝 Create Homework</h3>
     <div class="space-y-3">
-      <div><label class="lbl">Homework Title</label><input id="hwTitle" class="inp" placeholder="e.g. Python Variables – Day 3 HW"/></div>
-      <div><label class="lbl">Topic</label><input id="hwTopic" class="inp" placeholder="e.g. Variables and Data Types"/></div>
+      <div><label class="lbl">Homework Title *</label><input id="hwTitle" class="inp" placeholder="e.g. Python Variables – Day 3 HW"/></div>
+      ${schedOpts?`<div><label class="lbl">📅 Link Class Schedule *</label><select id="hwLinkedSched" class="inp" onchange="onHwSchedLink()"><option value="">— No Schedule Link —</option>${schedOpts}</select></div>`:''}
+      ${titleOpts?`<div><label class="lbl">📋 Link Curriculum Topic</label><select id="hwLinkedTitle" class="inp" onchange="if(this.value){const o=this.options[this.selectedIndex];document.getElementById('hwTopic').value=o.dataset.name||''}"><option value="">— No Link —</option>${titleOpts}</select></div>`:''}
+      <div><label class="lbl">Topic / Chapter</label><input id="hwTopic" class="inp" placeholder="e.g. Variables and Data Types"/></div>
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Date</label><input id="hwDate" class="inp" type="date" value="${new Date().toISOString().split('T')[0]}"/></div>
+        <div><label class="lbl">Date</label><input id="hwDate" class="inp" type="date" value="${today}"/></div>
         <div><label class="lbl">Due Date</label><input id="hwDue" class="inp" type="date"/></div>
       </div>
-      <div><label class="lbl">Instructions</label><textarea id="hwInstructions" class="inp" placeholder="Any special instructions..."></textarea></div>
-      <div id="hwQuestionsDiv" class="space-y-3"></div>
-      <button onclick="addHwQuestion()" class="btn btn-sky w-full justify-center">+ Add Question</button>
+      <!-- Homework Type Toggle -->
+      <div>
+        <label class="lbl">Homework Type</label>
+        <div class="flex rounded-xl overflow-hidden border border-slate-700">
+          <button id="hwTypeMCQ" onclick="setHwType('mcq')" class="flex-1 py-2 text-xs font-semibold transition-colors" style="background:rgba(56,189,248,0.15);color:#38bdf8">🔘 MCQ Questions</button>
+          <button id="hwTypeText" onclick="setHwType('text')" class="flex-1 py-2 text-xs font-semibold text-slate-500 transition-colors">📝 Text / Instructions</button>
+        </div>
+      </div>
+      <!-- MCQ Section -->
+      <div id="hwMCQSection">
+        <div id="hwQuestionsDiv" class="space-y-3"></div>
+        <button onclick="addHwQuestion()" class="btn btn-sky w-full justify-center">+ Add MCQ Question</button>
+      </div>
+      <!-- Text Section -->
+      <div id="hwTextSection" class="hidden">
+        <div><label class="lbl">Instructions / Questions</label><textarea id="hwInstructions" class="inp" rows="4" placeholder="Write homework questions, instructions or tasks here..."></textarea></div>
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <div><label class="lbl">Max Marks</label><input id="hwMaxMarks" class="inp" type="number" value="10" min="1"/></div>
+          <div><label class="lbl">Submission Type</label><select id="hwSubType" class="inp"><option>Written</option><option>File Upload</option><option>Online</option></select></div>
+        </div>
+      </div>
       <button onclick="saveHomework()" class="btn btn-primary w-full justify-center mt-1">💾 Save Homework</button>
     </div>`);
   addHwQuestion();
+  // Pre-select active schedule filter
+  if (activeSchedId) {
+    const s = document.getElementById('hwLinkedSched');
+    if (s) { s.value = activeSchedId; onHwSchedLink(); }
+  }
+};
+
+window.onHwSchedLink = () => {
+  const sel = document.getElementById('hwLinkedSched');
+  const opt = sel?.options[sel.selectedIndex];
+  if (opt?.value && opt.dataset.name) {
+    const t = document.getElementById('hwTopic');
+    if (t && !t.value) t.value = opt.dataset.name.replace(/^[A-Za-z]+ – /,'');
+  }
+};
+
+window.setHwType = (type) => {
+  const mcqSec = document.getElementById('hwMCQSection');
+  const txtSec = document.getElementById('hwTextSection');
+  const mcqBtn = document.getElementById('hwTypeMCQ');
+  const txtBtn = document.getElementById('hwTypeText');
+  if (type === 'mcq') {
+    mcqSec?.classList.remove('hidden'); txtSec?.classList.add('hidden');
+    mcqBtn.style.cssText='background:rgba(56,189,248,0.15);color:#38bdf8';
+    txtBtn.style.cssText='';  txtBtn.classList.add('text-slate-500');
+  } else {
+    mcqSec?.classList.add('hidden'); txtSec?.classList.remove('hidden');
+    txtBtn.style.cssText='background:rgba(167,139,250,0.15);color:#a78bfa';
+    mcqBtn.style.cssText=''; mcqBtn.classList.add('text-slate-500');
+  }
 };
 
 window.addHwQuestion = () => {
@@ -1948,63 +2555,142 @@ window.saveHomework = async () => {
   const title = document.getElementById('hwTitle').value.trim();
   const date = document.getElementById('hwDate').value;
   if (!title || !date) return toast('Title and date required','error');
-  const questions = [];
-  for (let qn = 1; qn <= hwQCount; qn++) {
-    if (!document.getElementById('hwq-' + qn)) continue;
-    const text = document.getElementById('hwqt-' + qn)?.value.trim();
-    const optA = document.getElementById('hwqa-' + qn)?.value.trim();
-    const optB = document.getElementById('hwqb-' + qn)?.value.trim();
-    const optC = document.getElementById('hwqc-' + qn)?.value.trim()||'';
-    const optD = document.getElementById('hwqd-' + qn)?.value.trim()||'';
-    const correct = document.getElementById('hwqcorr-' + qn)?.value;
-    const marks = parseInt(document.getElementById('hwqmarks-' + qn)?.value)||1;
-    if (text && optA && optB) questions.push({text,options:{A:optA,B:optB,C:optC,D:optD},correct,marks});
-  }
-  if (!questions.length) return toast('Add at least one question','error');
   const courseId = document.getElementById('hwCourseFilter').value;
   const course = myCourses.find(c=>c.id===courseId);
+  const isMCQ = !document.getElementById('hwMCQSection')?.classList.contains('hidden');
+  const linkedTitleSel = document.getElementById('hwLinkedTitle');
+  const linkedTitleId = linkedTitleSel?.value||'';
+  const linkedTitleName = linkedTitleId ? linkedTitleSel.options[linkedTitleSel.selectedIndex]?.dataset.name||'' : '';
+  const linkedSchedSel = document.getElementById('hwLinkedSched');
+  const linkedScheduleId = linkedSchedSel?.value||'';
+  const linkedScheduleName = linkedScheduleId ? linkedSchedSel.options[linkedSchedSel.selectedIndex]?.dataset.name||'' : '';
+
+  let questions = [], instructions = '', maxMarks = 0, hwType = 'mcq';
+
+  if (isMCQ) {
+    for (let qn = 1; qn <= hwQCount; qn++) {
+      if (!document.getElementById('hwq-' + qn)) continue;
+      const text = document.getElementById('hwqt-' + qn)?.value.trim();
+      const optA = document.getElementById('hwqa-' + qn)?.value.trim();
+      const optB = document.getElementById('hwqb-' + qn)?.value.trim();
+      const optC = document.getElementById('hwqc-' + qn)?.value.trim()||'';
+      const optD = document.getElementById('hwqd-' + qn)?.value.trim()||'';
+      const correct = document.getElementById('hwqcorr-' + qn)?.value;
+      const marks = parseInt(document.getElementById('hwqmarks-' + qn)?.value)||1;
+      if (text && optA && optB) questions.push({text,options:{A:optA,B:optB,C:optC,D:optD},correct,marks});
+    }
+    if (!questions.length) return toast('Add at least one MCQ question','error');
+    maxMarks = questions.reduce((s,q)=>s+q.marks,0);
+  } else {
+    instructions = document.getElementById('hwInstructions')?.value.trim()||'';
+    maxMarks = parseInt(document.getElementById('hwMaxMarks')?.value)||10;
+    hwType = 'text';
+    if (!instructions) return toast('Write homework instructions','error');
+  }
+
   const enSnap = await getDocs(query(collection(db,'enrollments'), where('courseId','==',courseId)));
   await addDoc(collection(db,'homeworks'), {
-    title, topic:document.getElementById('hwTopic').value.trim(),
-    date, dueDate:document.getElementById('hwDue').value,
-    instructions:document.getElementById('hwInstructions').value.trim(),
-    questions, courseId, courseName:course?.name||'',
+    title, topic: document.getElementById('hwTopic').value.trim(),
+    date, dueDate: document.getElementById('hwDue').value,
+    instructions, questions, maxMarks, hwType,
+    linkedTitleId, linkedTitleName,
+    linkedScheduleId, linkedScheduleName,
+    courseId, courseName: course?.name||'',
     teacherId:session.userId, teacherName:session.name,
     enrollCount:enSnap.size, isActive:true, createdAt:serverTimestamp()
   });
   hwQCount = 0;
-  toast('Homework created with ' + questions.length + ' questions!','success');
+  const msg = isMCQ ? `${questions.length} MCQ questions!` : 'Text homework!';
+  toast('Homework created — '+msg,'success');
   closeModal(); loadHomeworks();
 };
 
 window.editHomework = async (id) => {
   const d = await getDoc(doc(db,'homeworks',id)); if (!d.exists()) return;
   const hw = d.data();
-  showModal(`<h3 class="text-lg font-bold text-white mb-4">Edit Homework</h3>
+  const questions = hw.questions || [];
+  const isText = hw.hwType === 'text' || !questions.length;
+
+  // Build existing MCQ questions HTML
+  let qHtml = '';
+  if (!isText && questions.length) {
+    questions.forEach((q, i) => {
+      const qn = i + 1;
+      qHtml += `<div id="hwq-${qn}" class="p-3 rounded-xl border border-sky-400/15 bg-sky-400/4 space-y-2">
+        <div class="flex items-center justify-between"><p class="text-sky-400 text-xs font-bold">Question ${qn}</p><button onclick="document.getElementById('hwq-${qn}').remove()" class="text-slate-600 hover:text-red-400 text-xs">× Remove</button></div>
+        <input id="hwqt-${qn}" class="inp" value="${(q.question||'').replace(/"/g,'&quot;')}" placeholder="Question text..."/>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="hwqa-${qn}" class="inp" value="${(q.options?.A||'').replace(/"/g,'&quot;')}" placeholder="A: Option A"/>
+          <input id="hwqb-${qn}" class="inp" value="${(q.options?.B||'').replace(/"/g,'&quot;')}" placeholder="B: Option B"/>
+          <input id="hwqc-${qn}" class="inp" value="${(q.options?.C||'').replace(/"/g,'&quot;')}" placeholder="C: Option C"/>
+          <input id="hwqd-${qn}" class="inp" value="${(q.options?.D||'').replace(/"/g,'&quot;')}" placeholder="D: Option D"/>
+        </div>
+        <div class="flex gap-2">
+          <select id="hwqcorr-${qn}" class="inp">
+            ${['A','B','C','D'].map(x=>`<option value="${x}" ${q.correct===x?'selected':''}>Correct: ${x}</option>`).join('')}
+          </select>
+          <input id="hwqexp-${qn}" class="inp" value="${(q.explanation||'').replace(/"/g,'&quot;')}" placeholder="Explanation (optional)"/>
+        </div>
+      </div>`;
+    });
+  }
+
+  hwQCount = questions.length;
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">✏️ Edit Homework</h3>
     <div class="space-y-3">
-      <div><label class="lbl">Title</label><input id="hweTit" class="inp" value="${hw.title}"/></div>
+      <div><label class="lbl">Title</label><input id="hweTit" class="inp" value="${(hw.title||'').replace(/"/g,'&quot;')}"/></div>
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Date</label><input id="hweDate" class="inp" type="date" value="${hw.date}"/></div>
+        <div><label class="lbl">Date</label><input id="hweDate" class="inp" type="date" value="${hw.date||''}"/></div>
         <div><label class="lbl">Due Date</label><input id="hweDue" class="inp" type="date" value="${hw.dueDate||''}"/></div>
       </div>
-      <div><label class="lbl">Instructions</label><textarea id="hweInstr" class="inp">${hw.instructions||''}</textarea></div>
-      <p class="text-slate-600 text-xs">${hw.questions?.length||0} questions total</p>
+      ${!isText ? `
+      <div id="hwQuestionsDiv" class="space-y-3">${qHtml}</div>
+      <button onclick="addHwQuestion()" class="btn btn-sky w-full justify-center text-xs">+ Add MCQ Question</button>
+      ` : `
+      <div><label class="lbl">Instructions</label><textarea id="hweInstr" class="inp" rows="4">${hw.instructions||''}</textarea></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl">Max Marks</label><input id="hweMaxMarks" class="inp" type="number" value="${hw.maxMarks||10}"/></div>
+      </div>`}
       <div class="flex gap-2">
-        <button onclick="saveHomeworkEdit('${id}')" class="btn btn-primary flex-1 justify-center">Save</button>
-        <button onclick="toggleHomework('${id}',${hw.isActive!==false})" class="btn ${hw.isActive!==false?'btn-red':'btn-green'} flex-1 justify-center">${hw.isActive!==false?'Deactivate':'Activate'}</button>
+        <button onclick="saveHomeworkEdit('${id}',${isText})" class="btn btn-primary flex-1 justify-center">💾 Save Changes</button>
+        <button onclick="toggleHomework('${id}',${hw.isActive!==false})" class="btn ${hw.isActive!==false?'btn-red':'btn-green'} justify-center">${hw.isActive!==false?'Deactivate':'Activate'}</button>
       </div>
     </div>`);
 };
 
-window.saveHomeworkEdit = async (id) => {
-  await updateDoc(doc(db,'homeworks',id), {
-    title:document.getElementById('hweTit').value.trim(),
-    date:document.getElementById('hweDate').value,
-    dueDate:document.getElementById('hweDue').value,
-    instructions:document.getElementById('hweInstr').value.trim(),
-    updatedAt:serverTimestamp()
-  });
-  toast('Updated!','success'); closeModal(); loadHomeworks();
+window.saveHomeworkEdit = async (id, isText) => {
+  const title = document.getElementById('hweTit').value.trim();
+  if (!title) return toast('Title required','error');
+  const data = {
+    title,
+    date: document.getElementById('hweDate').value,
+    dueDate: document.getElementById('hweDue').value,
+    updatedAt: serverTimestamp()
+  };
+  if (isText) {
+    data.instructions = document.getElementById('hweInstr')?.value.trim()||'';
+    data.maxMarks = parseInt(document.getElementById('hweMaxMarks')?.value)||10;
+  } else {
+    // Re-collect MCQ questions
+    const questions = [];
+    let qn = 1;
+    while (document.getElementById('hwq-'+qn)) {
+      const qt = document.getElementById('hwqt-'+qn)?.value.trim();
+      if (qt) {
+        questions.push({
+          question: qt,
+          options: { A: document.getElementById('hwqa-'+qn)?.value.trim()||'', B: document.getElementById('hwqb-'+qn)?.value.trim()||'', C: document.getElementById('hwqc-'+qn)?.value.trim()||'', D: document.getElementById('hwqd-'+qn)?.value.trim()||'' },
+          correct: document.getElementById('hwqcorr-'+qn)?.value||'A',
+          explanation: document.getElementById('hwqexp-'+qn)?.value.trim()||''
+        });
+      }
+      qn++;
+    }
+    if (!questions.length) return toast('Add at least 1 MCQ question','error');
+    data.questions = questions;
+  }
+  await updateDoc(doc(db,'homeworks',id), data);
+  toast('Homework updated!','success'); closeModal(); loadHomeworks();
 };
 
 window.toggleHomework = async (id, current) => {
@@ -2106,9 +2792,8 @@ window.loadBatches = async () => {
         </div>
       </div>
       <div class="flex flex-wrap gap-1.5 text-xs text-slate-500">
-        ${b.startDate?`<span>📅 ${b.startDate}</span>`:''}
-        ${b.endDate?`<span>→ ${b.endDate}</span>`:''}
-        ${b.timing?`<span>⏰ ${b.timing}</span>`:''}
+        ${(()=>{const days=b.weekDays||{};const keys=['mon','tue','wed','thu','fri','sat','sun'];const active=keys.filter(d=>days[d]);return active.length?active.map(d=>`<span class="px-1.5 py-0.5 rounded font-semibold" style="background:rgba(110,231,183,0.1);color:#6ee7b7">${d.charAt(0).toUpperCase()+d.slice(1)}</span>`).join(''):'<span class="text-slate-700">No days set</span>';})()}
+        ${b.timeFrom&&b.timeTo?`<span class="ml-1">⏰ ${b.timeFrom} – ${b.timeTo}</span>`:b.timing?`<span>⏰ ${b.timing}</span>`:''}
         ${b.room?`<span>🏛 ${b.room}</span>`:''}
       </div>
       ${b.description?`<p class="text-slate-600 text-xs mt-2 italic">${b.description}</p>`:''}
@@ -2508,9 +3193,13 @@ window.exportBatchReport = async () => {
   toast('CSV exported!','success');
 };
 
-// ── CURRICULUM MANAGEMENT ────────────────────────────────────
-let currentCurriculum = null; // {id, courseId, courseName, ...}
-let curriculumUnitsCache = [];
+// ── CURRICULUM MANAGEMENT (Module → Title → Sub-title) ────────
+// Collections: curriculumUnits (modules), curriculumLessons (titles), curriculumSubTopics (sub-titles)
+
+let curCourseId = '';
+let curModules = [];   // curriculumUnits
+let curTitles = [];    // curriculumLessons
+let curSubTopics = []; // curriculumSubTopics
 
 function populateCurCourseFilter() {
   const sel = document.getElementById('curCourseFilter');
@@ -2519,432 +3208,382 @@ function populateCurCourseFilter() {
 }
 
 window.loadCurriculum = async () => {
-  const courseId = document.getElementById('curCourseFilter').value;
-  document.getElementById('curOverviewCard').classList.add('hidden');
-  document.getElementById('curUnitsContainer').innerHTML = '';
+  curCourseId = document.getElementById('curCourseFilter').value;
+  document.getElementById('curModulesContainer').innerHTML = '';
   document.getElementById('curEmpty').style.display = 'block';
-  if (!courseId) return;
+  document.getElementById('curStatsRow').classList.add('hidden');
+  document.getElementById('btnAddModule').classList.add('hidden');
+  document.getElementById('btnCurPDF').classList.add('hidden');
+  if (!curCourseId) return;
 
-  document.getElementById('curEmpty').innerHTML = '<div class="text-4xl mb-3">⏳</div><p>Loading curriculum...</p>';
+  document.getElementById('curEmpty').innerHTML = '<div class="text-3xl mb-2">⏳</div><p>Loading...</p>';
+  try {
+    // Load all modules for this course
+    // Load modules - use only courseId filter to avoid composite index requirement
+    const mSnap = await getDocs(query(collection(db,'curriculumUnits'), where('courseId','==',curCourseId)));
+    // Filter by teacherId client-side
+    curModules = mSnap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(m => !m.teacherId || m.teacherId===session.userId)
+      .sort((a,b)=>(a.order||0)-(b.order||0));
 
-  // Check if curriculum exists
-  const snap = await getDocs(query(collection(db,'curriculum'), where('courseId','==',courseId), where('teacherId','==',session.userId)));
-  if (snap.empty) {
-    document.getElementById('curEmpty').innerHTML = `<div class="text-4xl mb-3">📋</div>
-      <p class="text-slate-400 mb-4">No curriculum found for this course.</p>
-      <button onclick="openCreateCurriculum()" class="btn btn-primary">+ Setup Curriculum Now</button>`;
-    return;
-  }
+    // Load all titles (topics) for this course
+    const tSnap = await getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',curCourseId)));
+    curTitles = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
 
-  currentCurriculum = {id: snap.docs[0].id, ...snap.docs[0].data()};
-  await renderCurriculumView();
+    // Load all sub-topics
+    const stSnap = await getDocs(query(collection(db,'curriculumSubTopics'), where('courseId','==',curCourseId)));
+    curSubTopics = stSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+
+    document.getElementById('btnAddModule').classList.remove('hidden');
+    document.getElementById('btnCurPDF').classList.remove('hidden');
+
+    if (!curModules.length) {
+      document.getElementById('curEmpty').innerHTML = `<div class="text-4xl mb-3">📋</div>
+        <p class="text-slate-400 mb-4">No modules yet for this course.</p>
+        <button onclick="openAddModule()" class="btn btn-primary">+ Add First Module</button>`;
+      return;
+    }
+
+    document.getElementById('curEmpty').style.display = 'none';
+    document.getElementById('curStatsRow').classList.remove('hidden');
+
+    const doneTitles = curTitles.filter(t=>t.status==='done').length;
+    const pct = curTitles.length ? Math.round(doneTitles/curTitles.length*100) : 0;
+    document.getElementById('curStatModules').textContent = curModules.length;
+    document.getElementById('curStatTitles').textContent = curTitles.length;
+    document.getElementById('curStatDone').textContent = pct + '%';
+
+    renderModules();
+  } catch(e) { console.error(e); document.getElementById('curEmpty').innerHTML = '<p class="text-red-400">Error loading curriculum</p>'; }
 };
 
-async function renderCurriculumView() {
-  if (!currentCurriculum) return;
-  document.getElementById('curEmpty').style.display = 'none';
-
-  // Fill overview
-  document.getElementById('curTitle').textContent = currentCurriculum.title || currentCurriculum.courseName + ' Curriculum';
-  document.getElementById('curSubtitle').textContent = [currentCurriculum.subject, currentCurriculum.totalDuration, currentCurriculum.board].filter(Boolean).join(' · ');
-  document.getElementById('curOverviewCard').classList.remove('hidden');
-
-  // Load units
-  const uSnap = await getDocs(query(collection(db,'curriculumUnits'), where('curriculumId','==',currentCurriculum.id)));
-  curriculumUnitsCache = uSnap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (a.order||0)-(b.order||0));
-
-  // Load all lessons
-  let totalLessons = 0, doneLessons = 0;
-  const container = document.getElementById('curUnitsContainer');
+function renderModules() {
+  const container = document.getElementById('curModulesContainer');
   container.innerHTML = '';
+  if (!curModules.length) return;
+  curModules.forEach(mod => {
+    const modTitles = curTitles.filter(t=>t.moduleId===mod.id);
+    const done = modTitles.filter(t=>t.status==='done').length;
+    const pct = modTitles.length ? Math.round(done/modTitles.length*100) : 0;
 
-  if (!curriculumUnitsCache.length) {
-    container.innerHTML = `<div class="glass-card p-6 text-center text-slate-500"><p>No units yet. <button onclick="openAddUnit()" class="text-sky-400 hover:underline">Add first unit →</button></p></div>`;
-    updateCurStats(0, 0, 0, 0);
-    return;
-  }
-
-  for (const unit of curriculumUnitsCache) {
-    const lSnap = await getDocs(query(collection(db,'curriculumLessons'), where('unitId','==',unit.id)));
-    const lessons = lSnap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (a.order||0)-(b.order||0));
-    totalLessons += lessons.length;
-    doneLessons += lessons.filter(l => l.status === 'done').length;
-    container.appendChild(buildUnitCard(unit, lessons));
-  }
-
-  updateCurStats(curriculumUnitsCache.length, totalLessons, doneLessons, totalLessons ? Math.round(doneLessons/totalLessons*100) : 0);
-}
-
-function updateCurStats(units, lessons, done, pct) {
-  document.getElementById('curStatUnits').textContent = units;
-  document.getElementById('curStatLessons').textContent = lessons;
-  document.getElementById('curStatDone').textContent = done;
-  document.getElementById('curStatPct').textContent = pct + '%';
-  document.getElementById('curOverallBar').style.width = pct + '%';
-  document.getElementById('curProgressLabel').textContent = `${done} of ${lessons} lessons completed`;
-}
-
-function buildUnitCard(unit, lessons) {
-  const done = lessons.filter(l => l.status === 'done').length;
-  const pct = lessons.length ? Math.round(done/lessons.length*100) : 0;
-  const r = 22, circ = 2 * Math.PI * r;
-  const offset = circ - (pct/100)*circ;
-
-  const div = document.createElement('div');
-  div.className = 'cur-unit';
-  div.id = 'unit-' + unit.id;
-  div.innerHTML = `
-    <div class="cur-unit-header" onclick="toggleUnit('${unit.id}')">
-      <div class="progress-ring-wrap">
-        <svg width="52" height="52" viewBox="0 0 52 52">
-          <circle class="progress-ring-bg" cx="26" cy="26" r="${r}"/>
-          <circle class="progress-ring-fill" cx="26" cy="26" r="${r}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#38bdf8;">${pct}%</div>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2">
-          <span class="text-slate-400 text-xs font-bold mono">Unit ${unit.order||''}</span>
-          ${unit.duration ? `<span class="text-slate-600 text-xs">· ${unit.duration}</span>` : ''}
+    const el = document.createElement('div');
+    el.className = 'cur-unit';
+    el.id = 'mod-' + mod.id;
+    el.innerHTML = `
+      <div class="cur-unit-header" onclick="toggleModule('${mod.id}')">
+        <div style="min-width:44px;min-height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(56,189,248,0.1);border:2px solid rgba(56,189,248,${pct===100?'0.7':'0.2'});font-size:0.7rem;font-weight:700;color:#38bdf8">${pct}%</div>
+        <div class="flex-1 min-w-0">
+          <span class="text-slate-400 text-xs mono">Module ${mod.order||''}</span>
+          <h4 class="text-white font-bold text-sm mt-0.5">${mod.title}</h4>
+          <p class="text-slate-500 text-xs">${modTitles.length} titles · ${done} done</p>
         </div>
-        <h4 class="text-white font-bold text-sm mt-0.5 truncate">${unit.title}</h4>
-        <p class="text-slate-500 text-xs mt-0.5">${lessons.length} lessons · ${done} done</p>
+        <div class="flex gap-1.5 ml-2 flex-shrink-0">
+          <button onclick="event.stopPropagation();openAddTitle('${mod.id}')" class="btn btn-primary text-xs py-1 px-2">+ Title</button>
+          <button onclick="event.stopPropagation();openEditModule('${mod.id}')" class="btn btn-secondary text-xs py-1 px-2">✏️</button>
+          <button onclick="event.stopPropagation();deleteModule('${mod.id}')" class="btn btn-danger text-xs py-1 px-2">🗑️</button>
+          <span class="text-slate-500 transition-transform ml-1" id="marrow-${mod.id}">▼</span>
+        </div>
       </div>
-      <div class="flex gap-1 ml-2">
-        <button onclick="event.stopPropagation();openAddLesson('${unit.id}','${unit.title.replace(/'/g,"\\'")}','${currentCurriculum.courseId}')" class="btn btn-primary text-xs py-1 px-2">+ Lesson</button>
-        <button onclick="event.stopPropagation();editUnit('${unit.id}')" class="btn btn-secondary text-xs py-1 px-2">✏️</button>
-        <button onclick="event.stopPropagation();deleteUnit('${unit.id}')" class="btn btn-danger text-xs py-1 px-2">🗑️</button>
-        <span class="text-slate-500 ml-1 transition-transform" id="uarrow-${unit.id}" style="transform:rotate(0deg)">▼</span>
-      </div>
-    </div>
-    <div id="unitBody-${unit.id}" class="hidden">
-      ${lessons.length ? lessons.map(l => buildLessonRow(l, unit)).join('') : `<div class="p-4 text-center text-slate-600 text-xs">No lessons yet. <button onclick="openAddLesson('${unit.id}','${unit.title.replace(/'/g,"\\'")}','${currentCurriculum.courseId}')" class="text-sky-400 hover:underline">Add first lesson</button></div>`}
-    </div>`;
-  return div;
+      <div id="modBody-${mod.id}" class="hidden">
+        ${modTitles.length
+          ? modTitles.map(t => buildTitleRow(t)).join('')
+          : `<div class="p-4 text-center text-slate-600 text-xs">No titles yet. <button onclick="openAddTitle('${mod.id}')" class="text-sky-400 hover:underline">Add first title →</button></div>`
+        }
+      </div>`;
+    container.appendChild(el);
+  });
 }
 
-function buildLessonRow(l, unit) {
-  const statusColor = {planned:'ls-planned', ongoing:'ls-ongoing', done:'ls-done'}[l.status] || 'ls-planned';
-  const statusLabel = {planned:'Planned', ongoing:'Ongoing', done:'✓ Done'}[l.status] || 'Planned';
-  return `<div class="cur-lesson" id="lesson-${l.id}">
+function buildTitleRow(t) {
+  const subTopics = curSubTopics.filter(s=>s.titleId===t.id);
+  const statusColor = {planned:'ls-planned',ongoing:'ls-ongoing',done:'ls-done'}[t.status]||'ls-planned';
+  const expanded = `<div id="titleBody-${t.id}" class="${subTopics.length?'':'hidden'} pl-4 pb-2 space-y-1">
+    ${subTopics.map(s => `<div class="flex items-center justify-between px-3 py-1.5 rounded-lg" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04)">
+      <div class="flex items-center gap-2 flex-1 min-w-0">
+        <span class="text-slate-600 text-xs">↳</span>
+        <p class="text-slate-300 text-xs">${s.title}</p>
+        ${s.notes ? `<p class="text-slate-600 text-xs truncate hidden sm:block">· ${s.notes}</p>` : ''}
+      </div>
+      <div class="flex gap-1 flex-shrink-0">
+        <button onclick="openEditSubTopic('${s.id}')" class="text-sky-400 hover:text-sky-300 text-xs px-1">✏️</button>
+        <button onclick="deleteSubTopic('${s.id}','${t.id}')" class="text-red-400 hover:text-red-300 text-xs px-1">🗑️</button>
+      </div>
+    </div>`).join('')}
+    <button onclick="openAddSubTopic('${t.id}','${t.moduleId}')" class="text-xs text-sky-400 hover:underline px-2 py-1">+ Add Sub-title</button>
+  </div>`;
+
+  return `<div class="cur-lesson" id="title-${t.id}">
     <div class="lesson-status ${statusColor} flex-shrink-0"></div>
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap">
-        <span class="text-slate-400 text-xs mono">L${l.order||''}</span>
-        <p class="text-slate-200 text-sm font-semibold truncate">${l.title}</p>
-        ${l.type ? `<span class="cur-tag" style="background:rgba(56,189,248,0.08);color:#7dd3fc;border:1px solid rgba(56,189,248,0.2)">${l.type}</span>` : ''}
-        ${l.duration ? `<span class="text-slate-600 text-xs">⏱ ${l.duration}</span>` : ''}
+        <button onclick="toggleTitle('${t.id}')" class="text-left flex-1 min-w-0">
+          <p class="text-slate-200 text-sm font-semibold">${t.title}</p>
+        </button>
+        ${subTopics.length ? `<span class="text-slate-600 text-xs">${subTopics.length} sub-topics</span>` : ''}
+        ${t.scheduledDate ? `<span class="text-slate-600 text-xs">📅 ${t.scheduledDate}</span>` : ''}
+        ${t.homeworkRef ? `<span class="cur-tag ctr-hw">📝 HW</span>` : ''}
+        ${t.materialRef ? `<span class="cur-tag ctr-mat">📎 Mat</span>` : ''}
       </div>
-      ${l.description ? `<p class="text-slate-500 text-xs mt-0.5 truncate">${l.description}</p>` : ''}
-      <!-- Resource tags -->
-      <div class="flex gap-1.5 mt-1.5 flex-wrap">
-        ${l.youtubeUrl ? `<span class="cur-tag ctr-yt">▶ Video</span>` : ''}
-        ${l.materialRef ? `<span class="cur-tag ctr-mat">📎 Material</span>` : ''}
-        ${l.homeworkRef ? `<span class="cur-tag ctr-hw">📝 Homework</span>` : ''}
-        ${l.testRef ? `<span class="cur-tag ctr-test">📊 Test</span>` : ''}
-      </div>
+      ${expanded}
     </div>
     <div class="flex items-center gap-1.5 flex-shrink-0">
-      <select onchange="updateLessonStatus('${l.id}',this.value)" class="text-xs px-2 py-1 rounded-md border outline-none" style="background:#020c1b;border-color:rgba(56,189,248,0.2);color:#94a3b8">
-        <option value="planned" ${l.status==='planned'?'selected':''}>Planned</option>
-        <option value="ongoing" ${l.status==='ongoing'?'selected':''}>Ongoing</option>
-        <option value="done" ${l.status==='done'?'selected':''}>Done</option>
+      <select onchange="updateTitleStatus('${t.id}',this.value)" class="text-xs px-2 py-1 rounded-md border outline-none" style="background:#020c1b;border-color:rgba(56,189,248,0.2);color:#94a3b8">
+        <option value="planned" ${t.status==='planned'?'selected':''}>Planned</option>
+        <option value="ongoing" ${t.status==='ongoing'?'selected':''}>Ongoing</option>
+        <option value="done" ${t.status==='done'?'selected':''}>Done</option>
       </select>
-      <button onclick="editLesson('${l.id}')" class="text-sky-400 hover:text-sky-300 text-xs transition-colors px-1">✏️</button>
-      <button onclick="deleteLesson('${l.id}')" class="text-red-400 hover:text-red-300 text-xs transition-colors px-1">🗑️</button>
+      <button onclick="openEditTitle('${t.id}')" class="text-sky-400 hover:text-sky-300 text-xs px-1">✏️</button>
+      <button onclick="deleteTitle('${t.id}')" class="text-red-400 hover:text-red-300 text-xs px-1">🗑️</button>
     </div>
   </div>`;
 }
 
-window.toggleUnit = (unitId) => {
-  const body = document.getElementById('unitBody-'+unitId);
-  const arrow = document.getElementById('uarrow-'+unitId);
-  if (body.classList.contains('hidden')) {
-    body.classList.remove('hidden');
-    if (arrow) arrow.style.transform = 'rotate(180deg)';
-  } else {
-    body.classList.add('hidden');
-    if (arrow) arrow.style.transform = 'rotate(0deg)';
-  }
+window.toggleModule = (id) => {
+  const body = document.getElementById('modBody-'+id);
+  const arrow = document.getElementById('marrow-'+id);
+  const open = body.classList.toggle('hidden');
+  if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
 };
 
-window.openCreateCurriculum = async () => {
-  const courseId = document.getElementById('curCourseFilter').value;
-  const course = myCourses.find(c => c.id === courseId);
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">📋 Setup Course Curriculum</h3>
-    <div class="space-y-3">
-      <div><label class="lbl">Curriculum Title</label><input id="ctTitle" class="inp" placeholder="e.g. Python Programming – Full Course" value="${course ? course.name + ' Curriculum' : ''}"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Subject</label><input id="ctSubject" class="inp" placeholder="e.g. Computer Science"/></div>
-        <div><label class="lbl">Level</label><select id="ctLevel" class="inp"><option value="">Select</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>All Levels</option></select></div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Total Duration</label><input id="ctDuration" class="inp" placeholder="e.g. 3 months / 60 hours"/></div>
-        <div><label class="lbl">Board / Standard</label><input id="ctBoard" class="inp" placeholder="e.g. CBSE, Vocational"/></div>
-      </div>
-      <div><label class="lbl">Objectives (comma separated)</label><textarea id="ctObjectives" class="inp" rows="2" placeholder="Learn Python basics, Build projects, Prepare for certification..."></textarea></div>
-      <div><label class="lbl">Prerequisites</label><input id="ctPrereq" class="inp" placeholder="e.g. Basic computer knowledge"/></div>
-    </div>
-    <button onclick="saveCurriculumMeta(null)" class="btn btn-primary w-full justify-center mt-5">Create Curriculum</button>`);
+window.toggleTitle = (id) => {
+  const body = document.getElementById('titleBody-'+id);
+  if (body) body.classList.toggle('hidden');
 };
 
-window.editCurriculumMeta = async () => {
-  if (!currentCurriculum) return;
-  const c = currentCurriculum;
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Curriculum Info</h3>
-    <div class="space-y-3">
-      <div><label class="lbl">Title</label><input id="ctTitle" class="inp" value="${c.title||''}"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Subject</label><input id="ctSubject" class="inp" value="${c.subject||''}"/></div>
-        <div><label class="lbl">Level</label><select id="ctLevel" class="inp"><option value="">Select</option><option ${c.level==='Beginner'?'selected':''}>Beginner</option><option ${c.level==='Intermediate'?'selected':''}>Intermediate</option><option ${c.level==='Advanced'?'selected':''}>Advanced</option><option ${c.level==='All Levels'?'selected':''}>All Levels</option></select></div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Total Duration</label><input id="ctDuration" class="inp" value="${c.totalDuration||''}"/></div>
-        <div><label class="lbl">Board / Standard</label><input id="ctBoard" class="inp" value="${c.board||''}"/></div>
-      </div>
-      <div><label class="lbl">Objectives</label><textarea id="ctObjectives" class="inp" rows="2">${(c.objectives||[]).join(', ')}</textarea></div>
-      <div><label class="lbl">Prerequisites</label><input id="ctPrereq" class="inp" value="${c.prerequisites||''}"/></div>
-    </div>
-    <button onclick="saveCurriculumMeta('${c.id}')" class="btn btn-primary w-full justify-center mt-5">Save Changes</button>`);
-};
-
-window.saveCurriculumMeta = async (id) => {
-  const courseId = document.getElementById('curCourseFilter').value;
-  const course = myCourses.find(c => c.id === courseId);
-  const title = document.getElementById('ctTitle').value.trim();
-  const subject = document.getElementById('ctSubject').value.trim();
-  const level = document.getElementById('ctLevel').value;
-  const totalDuration = document.getElementById('ctDuration').value.trim();
-  const board = document.getElementById('ctBoard').value.trim();
-  const objectives = document.getElementById('ctObjectives').value.split(',').map(s=>s.trim()).filter(Boolean);
-  const prerequisites = document.getElementById('ctPrereq').value.trim();
-  if (!title) return toast('Title required', 'error');
-  const data = {title, subject, level, totalDuration, board, objectives, prerequisites, courseId, courseName: course?.name||'', teacherId: session.userId, teacherName: session.name, updatedAt: serverTimestamp()};
-  if (id) {
-    await updateDoc(doc(db,'curriculum',id), data);
-    currentCurriculum = {...currentCurriculum, ...data};
-    toast('Updated!', 'success');
-  } else {
-    const ref = await addDoc(collection(db,'curriculum'), {...data, createdAt: serverTimestamp()});
-    currentCurriculum = {id: ref.id, ...data};
-    toast('Curriculum created!', 'success');
-  }
-  closeModal();
-  await renderCurriculumView();
-};
-
-window.openAddUnit = async () => {
-  const nextOrder = curriculumUnitsCache.length + 1;
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">📦 Add Unit / Chapter</h3>
+// ── MODULE CRUD ───────────────────────────────────────────────
+window.openAddModule = () => {
+  const next = curModules.length + 1;
+  showModal(`<h3 class="text-lg font-bold text-white mb-5">📦 Add Module</h3>
     <div class="space-y-3">
       <div class="grid grid-cols-4 gap-3">
-        <div><label class="lbl">Order</label><input id="uOrder" class="inp" type="number" value="${nextOrder}" min="1"/></div>
-        <div class="col-span-3"><label class="lbl">Unit Title *</label><input id="uTitle" class="inp" placeholder="e.g. Chapter 1: Introduction to Python"/></div>
+        <div><label class="lbl">Order</label><input id="mOrder" class="inp" type="number" value="${next}" min="1"/></div>
+        <div class="col-span-3"><label class="lbl">Module Title *</label><input id="mTitle" class="inp" placeholder="e.g. Module 1: Introduction to HTML"/></div>
       </div>
-      <div><label class="lbl">Description</label><textarea id="uDesc" class="inp" rows="2" placeholder="What students will learn in this unit..."></textarea></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Duration</label><input id="uDuration" class="inp" placeholder="e.g. 2 weeks / 8 hours"/></div>
-        <div><label class="lbl">Start Date</label><input id="uStart" class="inp" type="date"/></div>
-      </div>
+      <div><label class="lbl">Description (optional)</label><textarea id="mDesc" class="inp" rows="2" placeholder="What this module covers..."></textarea></div>
     </div>
-    <button onclick="saveUnit(null)" class="btn btn-primary w-full justify-center mt-5">Add Unit</button>`);
+    <button onclick="saveModule(null)" class="btn btn-primary w-full justify-center mt-5">Add Module</button>`);
 };
 
-window.editUnit = async (unitId) => {
-  const unit = curriculumUnitsCache.find(u => u.id === unitId);
-  if (!unit) return;
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Unit</h3>
+window.openEditModule = (id) => {
+  const m = curModules.find(x=>x.id===id); if(!m) return;
+  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Module</h3>
     <div class="space-y-3">
       <div class="grid grid-cols-4 gap-3">
-        <div><label class="lbl">Order</label><input id="uOrder" class="inp" type="number" value="${unit.order||1}"/></div>
-        <div class="col-span-3"><label class="lbl">Title</label><input id="uTitle" class="inp" value="${unit.title}"/></div>
+        <div><label class="lbl">Order</label><input id="mOrder" class="inp" type="number" value="${m.order||1}"/></div>
+        <div class="col-span-3"><label class="lbl">Title</label><input id="mTitle" class="inp" value="${m.title}"/></div>
       </div>
-      <div><label class="lbl">Description</label><textarea id="uDesc" class="inp" rows="2">${unit.description||''}</textarea></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Duration</label><input id="uDuration" class="inp" value="${unit.duration||''}"/></div>
-        <div><label class="lbl">Start Date</label><input id="uStart" class="inp" type="date" value="${unit.startDate||''}"/></div>
-      </div>
+      <div><label class="lbl">Description</label><textarea id="mDesc" class="inp" rows="2">${m.description||''}</textarea></div>
     </div>
-    <button onclick="saveUnit('${unitId}')" class="btn btn-primary w-full justify-center mt-5">Save Changes</button>`);
+    <button onclick="saveModule('${id}')" class="btn btn-primary w-full justify-center mt-5">Save</button>`);
 };
 
-window.saveUnit = async (id) => {
-  const title = document.getElementById('uTitle').value.trim();
-  const description = document.getElementById('uDesc').value.trim();
-  const order = parseInt(document.getElementById('uOrder').value)||1;
-  const duration = document.getElementById('uDuration').value.trim();
-  const startDate = document.getElementById('uStart').value;
-  if (!title) return toast('Unit title required','error');
-  const data = {title, description, order, duration, startDate, curriculumId: currentCurriculum.id, courseId: currentCurriculum.courseId, teacherId: session.userId, updatedAt: serverTimestamp()};
+window.saveModule = async (id) => {
+  const title = document.getElementById('mTitle').value.trim();
+  const order = parseInt(document.getElementById('mOrder').value)||1;
+  const description = document.getElementById('mDesc').value.trim();
+  if (!title) return toast('Module title required','error');
+  const data = {title, order, description, courseId: curCourseId, teacherId: session.userId, updatedAt: serverTimestamp()};
   if (id) {
     await updateDoc(doc(db,'curriculumUnits',id), data);
-    toast('Unit updated!','success');
+    toast('Module updated!','success');
   } else {
     await addDoc(collection(db,'curriculumUnits'), {...data, createdAt: serverTimestamp()});
-    toast('Unit added!','success');
+    toast('Module added!','success');
   }
-  closeModal(); await renderCurriculumView();
-  // Auto-expand the new unit
-  const container = document.getElementById('curUnitsContainer');
-  if (container.lastElementChild) {
-    const bodyId = container.lastElementChild.querySelector('[id^="unitBody-"]')?.id;
-    if (bodyId) document.getElementById(bodyId).classList.remove('hidden');
-  }
+  closeModal(); await loadCurriculum();
 };
 
-window.deleteUnit = async (unitId) => {
-  if (!confirm('Delete this unit? All its lessons will also be deleted.')) return;
-  const lSnap = await getDocs(query(collection(db,'curriculumLessons'),where('unitId','==',unitId)));
-  for (const d of lSnap.docs) await deleteDoc(d.ref);
-  await deleteDoc(doc(db,'curriculumUnits',unitId));
-  toast('Unit deleted','success'); await renderCurriculumView();
+window.deleteModule = async (id) => {
+  if (!confirm('Delete this module? All its titles and sub-titles will also be deleted.')) return;
+  const titles = curTitles.filter(t=>t.moduleId===id);
+  for (const t of titles) {
+    const stSnap = await getDocs(query(collection(db,'curriculumSubTopics'),where('titleId','==',t.id)));
+    for (const s of stSnap.docs) await deleteDoc(s.ref);
+    await deleteDoc(doc(db,'curriculumLessons',t.id));
+  }
+  await deleteDoc(doc(db,'curriculumUnits',id));
+  toast('Module deleted','success'); await loadCurriculum();
 };
 
-window.openAddLesson = async (unitId, unitTitle, courseId) => {
-  // Load playlists for this course to link videos
-  const plSnap = await getDocs(query(collection(db,'playlists'),where('courseId','==',courseId)));
-  const plOpts = plSnap.docs.map(d=>`<option value="${d.id}">${d.data().name}</option>`).join('');
-  // Count existing lessons in this unit
-  const lSnap = await getDocs(query(collection(db,'curriculumLessons'),where('unitId','==',unitId)));
-  const nextOrder = lSnap.size + 1;
-
-  showModal(`<h3 class="text-lg font-bold text-white mb-1">➕ Add Lesson</h3>
-    <p class="text-slate-500 text-xs mb-5">Unit: ${unitTitle}</p>
+// ── TITLE CRUD ────────────────────────────────────────────────
+window.openAddTitle = (moduleId) => {
+  const mod = curModules.find(m=>m.id===moduleId);
+  const modTitles = curTitles.filter(t=>t.moduleId===moduleId);
+  const next = modTitles.length + 1;
+  showModal(`<h3 class="text-lg font-bold text-white mb-1">📌 Add Title</h3>
+    <p class="text-slate-500 text-xs mb-4">Module: ${mod?.title||''}</p>
     <div class="space-y-3">
       <div class="grid grid-cols-4 gap-3">
-        <div><label class="lbl">Order</label><input id="lOrder" class="inp" type="number" value="${nextOrder}" min="1"/></div>
-        <div class="col-span-3"><label class="lbl">Lesson Title *</label><input id="lTitle" class="inp" placeholder="e.g. Variables and Data Types"/></div>
+        <div><label class="lbl">Order</label><input id="tOrder" class="inp" type="number" value="${next}" min="1"/></div>
+        <div class="col-span-3"><label class="lbl">Title *</label><input id="tTitle" class="inp" placeholder="e.g. What is HTML?"/></div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Type</label>
-          <select id="lType" class="inp">
-            <option value="Lecture">Lecture</option>
-            <option value="Lab">Lab / Practical</option>
-            <option value="Discussion">Discussion</option>
-            <option value="Assignment">Assignment</option>
-            <option value="Revision">Revision</option>
-            <option value="Test">Test</option>
-          </select>
-        </div>
-        <div><label class="lbl">Duration</label><input id="lDuration" class="inp" placeholder="e.g. 45 min"/></div>
-      </div>
-      <div><label class="lbl">Description / Learning Outcomes</label><textarea id="lDesc" class="inp" rows="2" placeholder="Students will learn..."></textarea></div>
-      <div><label class="lbl">YouTube Video URL (optional)</label><input id="lYt" class="inp font-mono" placeholder="https://youtube.com/..."/></div>
-      <div><label class="lbl">Link Video Playlist (optional)</label>
-        <select id="lPlaylist" class="inp"><option value="">No Playlist</option>${plOpts}</select>
-      </div>
+      <div><label class="lbl">Notes (optional)</label><textarea id="tNotes" class="inp" rows="2" placeholder="Description or learning objectives..."></textarea></div>
       <div><label class="lbl">Status</label>
-        <select id="lStatus" class="inp">
-          <option value="planned">Planned</option>
-          <option value="ongoing">Ongoing</option>
-          <option value="done">Done</option>
+        <select id="tStatus" class="inp">
+          <option value="planned">Planned</option><option value="ongoing">Ongoing</option><option value="done">Done</option>
         </select>
       </div>
-      <div><label class="lbl">Scheduled Date</label><input id="lDate" class="inp" type="date"/></div>
+      <div><label class="lbl">Scheduled Date</label><input id="tDate" class="inp" type="date"/></div>
     </div>
-    <button onclick="saveLesson(null,'${unitId}')" class="btn btn-primary w-full justify-center mt-5">Add Lesson</button>`);
+    <button onclick="saveTitle(null,'${moduleId}')" class="btn btn-primary w-full justify-center mt-5">Add Title</button>`);
 };
 
-window.editLesson = async (lessonId) => {
-  const d = await getDoc(doc(db,'curriculumLessons',lessonId));
-  if (!d.exists()) return;
-  const l = d.data();
-  const plSnap = await getDocs(query(collection(db,'playlists'),where('courseId','==',l.courseId)));
-  const plOpts = plSnap.docs.map(doc=>`<option value="${doc.id}" ${l.playlistId===doc.id?'selected':''}>${doc.data().name}</option>`).join('');
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Lesson</h3>
+window.openEditTitle = async (id) => {
+  const t = curTitles.find(x=>x.id===id); if(!t) return;
+  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Title</h3>
     <div class="space-y-3">
       <div class="grid grid-cols-4 gap-3">
-        <div><label class="lbl">Order</label><input id="lOrder" class="inp" type="number" value="${l.order||1}"/></div>
-        <div class="col-span-3"><label class="lbl">Title</label><input id="lTitle" class="inp" value="${l.title}"/></div>
+        <div><label class="lbl">Order</label><input id="tOrder" class="inp" type="number" value="${t.order||1}"/></div>
+        <div class="col-span-3"><label class="lbl">Title</label><input id="tTitle" class="inp" value="${t.title}"/></div>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Type</label><select id="lType" class="inp"><option ${l.type==='Lecture'?'selected':''}>Lecture</option><option ${l.type==='Lab'?'selected':''}>Lab / Practical</option><option ${l.type==='Discussion'?'selected':''}>Discussion</option><option ${l.type==='Assignment'?'selected':''}>Assignment</option><option ${l.type==='Revision'?'selected':''}>Revision</option><option ${l.type==='Test'?'selected':''}>Test</option></select></div>
-        <div><label class="lbl">Duration</label><input id="lDuration" class="inp" value="${l.duration||''}"/></div>
+      <div><label class="lbl">Notes</label><textarea id="tNotes" class="inp" rows="2">${t.notes||''}</textarea></div>
+      <div><label class="lbl">Status</label>
+        <select id="tStatus" class="inp">
+          <option value="planned" ${t.status==='planned'?'selected':''}>Planned</option>
+          <option value="ongoing" ${t.status==='ongoing'?'selected':''}>Ongoing</option>
+          <option value="done" ${t.status==='done'?'selected':''}>Done</option>
+        </select>
       </div>
-      <div><label class="lbl">Description</label><textarea id="lDesc" class="inp" rows="2">${l.description||''}</textarea></div>
-      <div><label class="lbl">YouTube URL</label><input id="lYt" class="inp font-mono" value="${l.youtubeUrl||''}"/></div>
-      <div><label class="lbl">Link Playlist</label><select id="lPlaylist" class="inp"><option value="">No Playlist</option>${plOpts}</select></div>
-      <div><label class="lbl">Status</label><select id="lStatus" class="inp"><option value="planned" ${l.status==='planned'?'selected':''}>Planned</option><option value="ongoing" ${l.status==='ongoing'?'selected':''}>Ongoing</option><option value="done" ${l.status==='done'?'selected':''}>Done</option></select></div>
-      <div><label class="lbl">Scheduled Date</label><input id="lDate" class="inp" type="date" value="${l.scheduledDate||''}"/></div>
+      <div><label class="lbl">Scheduled Date</label><input id="tDate" class="inp" type="date" value="${t.scheduledDate||''}"/></div>
     </div>
-    <button onclick="saveLesson('${lessonId}','${l.unitId}')" class="btn btn-primary w-full justify-center mt-5">Save Changes</button>`);
+    <button onclick="saveTitle('${id}','${t.moduleId}')" class="btn btn-primary w-full justify-center mt-5">Save</button>`);
 };
 
-window.saveLesson = async (id, unitId) => {
-  const title = document.getElementById('lTitle').value.trim();
-  const type = document.getElementById('lType').value;
-  const duration = document.getElementById('lDuration').value.trim();
-  const description = document.getElementById('lDesc').value.trim();
-  const youtubeUrl = document.getElementById('lYt').value.trim();
-  const playlistId = document.getElementById('lPlaylist').value;
-  const status = document.getElementById('lStatus').value;
-  const scheduledDate = document.getElementById('lDate').value;
-  const order = parseInt(document.getElementById('lOrder').value)||1;
-  if (!title) return toast('Lesson title required','error');
-  const unit = curriculumUnitsCache.find(u => u.id === unitId);
-  const data = {title, type, duration, description, youtubeUrl, playlistId, status, scheduledDate, order, unitId, unitTitle: unit?.title||'', curriculumId: currentCurriculum.id, courseId: currentCurriculum.courseId, teacherId: session.userId, updatedAt: serverTimestamp()};
+window.saveTitle = async (id, moduleId) => {
+  const title = document.getElementById('tTitle').value.trim();
+  const order = parseInt(document.getElementById('tOrder').value)||1;
+  const notes = document.getElementById('tNotes').value.trim();
+  const status = document.getElementById('tStatus').value;
+  const scheduledDate = document.getElementById('tDate').value;
+  if (!title) return toast('Title required','error');
+  const mod = curModules.find(m=>m.id===moduleId);
+  const data = {title, order, notes, status, scheduledDate, moduleId, moduleName: mod?.title||'', courseId: curCourseId, teacherId: session.userId, updatedAt: serverTimestamp()};
   if (id) {
     await updateDoc(doc(db,'curriculumLessons',id), data);
-    toast('Lesson updated!','success');
+    toast('Title updated!','success');
   } else {
-    await addDoc(collection(db,'curriculumLessons'), {...data, createdAt: serverTimestamp()});
-    toast('Lesson added!','success');
+    await addDoc(collection(db,'curriculumLessons'), {...data, homeworkRef:'', materialRef:'', createdAt: serverTimestamp()});
+    toast('Title added!','success');
   }
-  closeModal(); await renderCurriculumView();
-  // Keep the unit expanded
-  setTimeout(() => { document.getElementById('unitBody-'+unitId)?.classList.remove('hidden'); }, 200);
+  closeModal(); await loadCurriculum();
 };
 
-window.updateLessonStatus = async (lessonId, newStatus) => {
-  await updateDoc(doc(db,'curriculumLessons',lessonId), {status: newStatus, updatedAt: serverTimestamp()});
+window.updateTitleStatus = async (id, status) => {
+  await updateDoc(doc(db,'curriculumLessons',id), {status, updatedAt: serverTimestamp()});
+  const t = curTitles.find(x=>x.id===id);
+  if (t) t.status = status;
+  // Update stats only
+  const done = curTitles.filter(t=>t.status==='done').length;
+  const pct = curTitles.length ? Math.round(done/curTitles.length*100) : 0;
+  document.getElementById('curStatDone').textContent = pct + '%';
+  renderModules();
   toast('Status updated','success');
-  await renderCurriculumView();
 };
 
-window.deleteLesson = async (lessonId) => {
-  if (!confirm('Delete this lesson?')) return;
-  await deleteDoc(doc(db,'curriculumLessons',lessonId));
-  toast('Lesson deleted','success'); await renderCurriculumView();
+window.deleteTitle = async (id) => {
+  if (!confirm('Delete this title? Sub-titles will also be deleted.')) return;
+  const stSnap = await getDocs(query(collection(db,'curriculumSubTopics'),where('titleId','==',id)));
+  for (const s of stSnap.docs) await deleteDoc(s.ref);
+  await deleteDoc(doc(db,'curriculumLessons',id));
+  toast('Title deleted','success'); await loadCurriculum();
 };
 
+// ── SUB-TOPIC CRUD ────────────────────────────────────────────
+window.openAddSubTopic = (titleId, moduleId) => {
+  const t = curTitles.find(x=>x.id===titleId);
+  const existing = curSubTopics.filter(s=>s.titleId===titleId);
+  showModal(`<h3 class="text-lg font-bold text-white mb-1">🔖 Add Sub-title</h3>
+    <p class="text-slate-500 text-xs mb-4">Title: ${t?.title||''}</p>
+    <div class="space-y-3">
+      <div class="grid grid-cols-4 gap-3">
+        <div><label class="lbl">Order</label><input id="stOrder" class="inp" type="number" value="${existing.length+1}" min="1"/></div>
+        <div class="col-span-3"><label class="lbl">Sub-title *</label><input id="stTitle" class="inp" placeholder="e.g. HTML Tags & Attributes"/></div>
+      </div>
+      <div><label class="lbl">Notes (optional)</label><input id="stNotes" class="inp" placeholder="Brief description..."/></div>
+    </div>
+    <button onclick="saveSubTopic(null,'${titleId}','${moduleId}')" class="btn btn-primary w-full justify-center mt-5">Add Sub-title</button>`);
+};
+
+window.openEditSubTopic = (id) => {
+  const s = curSubTopics.find(x=>x.id===id); if(!s) return;
+  showModal(`<h3 class="text-lg font-bold text-white mb-5">✏️ Edit Sub-title</h3>
+    <div class="space-y-3">
+      <div class="grid grid-cols-4 gap-3">
+        <div><label class="lbl">Order</label><input id="stOrder" class="inp" type="number" value="${s.order||1}"/></div>
+        <div class="col-span-3"><label class="lbl">Sub-title</label><input id="stTitle" class="inp" value="${s.title}"/></div>
+      </div>
+      <div><label class="lbl">Notes</label><input id="stNotes" class="inp" value="${s.notes||''}"/></div>
+    </div>
+    <button onclick="saveSubTopic('${id}','${s.titleId}','${s.moduleId}')" class="btn btn-primary w-full justify-center mt-5">Save</button>`);
+};
+
+window.saveSubTopic = async (id, titleId, moduleId) => {
+  const title = document.getElementById('stTitle').value.trim();
+  const order = parseInt(document.getElementById('stOrder').value)||1;
+  const notes = document.getElementById('stNotes').value.trim();
+  if (!title) return toast('Sub-title required','error');
+  const data = {title, order, notes, titleId, moduleId, courseId: curCourseId, teacherId: session.userId, updatedAt: serverTimestamp()};
+  if (id) {
+    await updateDoc(doc(db,'curriculumSubTopics',id), data);
+    toast('Sub-title updated!','success');
+  } else {
+    await addDoc(collection(db,'curriculumSubTopics'), {...data, createdAt: serverTimestamp()});
+    toast('Sub-title added!','success');
+  }
+  closeModal(); await loadCurriculum();
+};
+
+window.deleteSubTopic = async (id, titleId) => {
+  if (!confirm('Delete this sub-title?')) return;
+  await deleteDoc(doc(db,'curriculumSubTopics',id));
+  curSubTopics = curSubTopics.filter(s=>s.id!==id);
+  toast('Deleted','success');
+  renderModules();
+};
+
+// ── PDF EXPORT ────────────────────────────────────────────────
 window.exportCurriculumPDF = async () => {
-  if (!currentCurriculum) return;
+  if (!curModules.length) return toast('No curriculum to export','error');
   const {jsPDF} = window.jspdf;
   const pdf = new jsPDF();
+  const course = myCourses.find(c=>c.id===curCourseId);
   pdf.setFillColor(2,8,23); pdf.rect(0,0,210,297,'F');
   pdf.setFillColor(15,23,42); pdf.rect(0,0,210,24,'F');
   pdf.setTextColor(56,189,248); pdf.setFontSize(13); pdf.setFont('helvetica','bold');
-  pdf.text('VIMS – Course Curriculum',105,15,{align:'center'});
+  pdf.text('VIMS – Course Curriculum', 105, 15, {align:'center'});
   let y = 34;
-  pdf.setTextColor(226,232,240); pdf.setFontSize(11);
-  pdf.text(currentCurriculum.title||'Curriculum', 14, y); y+=6;
-  pdf.setTextColor(100,116,139); pdf.setFontSize(8);
-  pdf.text([currentCurriculum.subject, currentCurriculum.level, currentCurriculum.totalDuration].filter(Boolean).join(' · '), 14, y); y+=10;
-  for (const unit of curriculumUnitsCache) {
+  pdf.setTextColor(226,232,240); pdf.setFontSize(10);
+  pdf.text(course?.name||'Curriculum', 14, y); y+=8;
+
+  for (const mod of curModules) {
     if (y > 270) { pdf.addPage(); pdf.setFillColor(2,8,23); pdf.rect(0,0,210,297,'F'); y=15; }
     pdf.setFillColor(8,30,60); pdf.rect(12,y-4,186,8,'F');
     pdf.setTextColor(56,189,248); pdf.setFontSize(9); pdf.setFont('helvetica','bold');
-    pdf.text(`Unit ${unit.order}: ${unit.title}`, 14, y+0.5);
-    if (unit.duration) { pdf.setTextColor(100,116,139); pdf.setFontSize(7); pdf.text(unit.duration, 195, y+0.5, {align:'right'}); }
+    pdf.text(`Module ${mod.order}: ${mod.title}`, 14, y+0.5);
     y += 10;
-    const lSnap = await getDocs(query(collection(db,'curriculumLessons'),where('unitId','==',unit.id)));
-    const lessons = lSnap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
-    for (const l of lessons) {
+
+    const modTitles = curTitles.filter(t=>t.moduleId===mod.id);
+    for (const t of modTitles) {
       if (y > 278) { pdf.addPage(); pdf.setFillColor(2,8,23); pdf.rect(0,0,210,297,'F'); y=15; }
-      const statusDot = l.status==='done'?'✓':l.status==='ongoing'?'●':'○';
-      const lr=l.status==='done'?52:l.status==='ongoing'?251:71, lg=l.status==='done'?211:l.status==='ongoing'?191:85, lb=l.status==='done'?153:l.status==='ongoing'?36:105;
-      pdf.setTextColor(lr,lg,lb);
-      pdf.text(statusDot, 16, y);
+      const dot = t.status==='done'?'✓':t.status==='ongoing'?'●':'○';
+      const clr = t.status==='done'?[52,211,153]:t.status==='ongoing'?[251,191,36]:[71,85,105];
+      pdf.setTextColor(...clr); pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
+      pdf.text(dot, 16, y);
       pdf.setTextColor(203,213,225);
-      pdf.text(`L${l.order||'-'}: ${l.title}`, 22, y);
-      if (l.type) { pdf.setTextColor(56,189,248); pdf.text(`[${l.type}]`, 155, y); }
-      if (l.duration) { pdf.setTextColor(71,85,105); pdf.text(l.duration, 195, y, {align:'right'}); }
-      y += 6.5;
+      pdf.text(`${t.order||'-'}. ${t.title}`, 22, y);
+      y += 6;
+
+      const subs = curSubTopics.filter(s=>s.titleId===t.id);
+      for (const s of subs) {
+        if (y > 280) { pdf.addPage(); pdf.setFillColor(2,8,23); pdf.rect(0,0,210,297,'F'); y=15; }
+        pdf.setTextColor(71,85,105); pdf.setFontSize(7);
+        pdf.text(`↳ ${s.title}`, 28, y);
+        y += 5;
+      }
     }
     y += 3;
   }
-  pdf.save(`${currentCurriculum.courseName||'curriculum'}.pdf`);
+  pdf.save(`${course?.name||'curriculum'}.pdf`);
   toast('PDF exported!','success');
 };
 
@@ -2984,14 +3623,16 @@ function ytEmbed(videoId, autoplay = 0) {
 
 window.loadPlaylists = async () => {
   const courseId = document.getElementById('videoCourseFilter').value;
+  const schedId = document.getElementById('videoSchedFilter')?.value||'';
   const grid = document.getElementById('playlistGrid');
   if (!courseId) { grid.innerHTML = '<div class="glass-card p-6 text-center text-slate-600 col-span-full">Select a course to view playlists</div>'; return; }
   const snap = await getDocs(query(collection(db, 'playlists'), where('courseId', '==', courseId), where('teacherId', '==', session.userId)));
-  const playlists = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.order||0)-(b.order||0));
+  let playlists = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.order||0)-(b.order||0));
+  if (schedId) playlists = playlists.filter(p => p.linkedScheduleId === schedId);
   if (!playlists.length) {
     grid.innerHTML = `<div class="glass-card p-8 text-center col-span-full">
       <div class="text-4xl mb-3">🎬</div>
-      <p class="text-slate-400 text-sm mb-4">No playlists yet for this course</p>
+      <p class="text-slate-400 text-sm mb-4">${schedId?'No playlists linked to this class slot.':'No playlists yet for this course'}</p>
       <button onclick="openCreatePlaylist()" class="btn btn-primary">+ Create First Playlist</button>
     </div>`;
     return;
@@ -3007,8 +3648,12 @@ window.loadPlaylists = async () => {
           <h4 class="font-bold text-white text-sm leading-snug">${pl.name}</h4>
           <span class="badge text-xs flex-shrink-0" style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3)">${vCount} videos</span>
         </div>
-        <p class="text-slate-500 text-xs mb-1">${pl.chapterName || ''}</p>
-        <p class="text-slate-600 text-xs mb-3 line-clamp-2">${pl.description || ''}</p>
+        ${pl.chapterName?`<p class="text-sky-400 text-xs mb-1">📋 ${pl.chapterName}</p>`:''}
+        <p class="text-slate-600 text-xs mb-2 line-clamp-2">${pl.description || ''}</p>
+        ${pl.linkedScheduleId||pl.linkedMaterialId?`<div class="flex gap-1.5 mb-2 flex-wrap">
+          ${pl.linkedScheduleId?`<span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,0.1);color:#6ee7b7">📅 Schedule Linked</span>`:''}
+          ${pl.linkedMaterialId?`<span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(251,191,36,0.1);color:#fbbf24">📎 Material Linked</span>`:''}
+        </div>`:''}
         <div class="flex gap-2">
           <button onclick="openPlaylistDetail('${pl.id}')" class="btn btn-primary flex-1 justify-center text-xs">▶ Manage Videos</button>
           <button onclick="editPlaylist('${pl.id}')" class="btn btn-secondary text-xs">Edit</button>
@@ -3021,20 +3666,28 @@ window.loadPlaylists = async () => {
 
 window.openCreatePlaylist = async () => {
   const courseId = document.getElementById('videoCourseFilter').value;
-  // Get topics for this course
-  let topicOpts = '<option value="">No Chapter</option>';
-  if (courseId) {
-    const tSnap = await getDocs(query(collection(db, 'topics'), where('courseId', '==', courseId)));
-    tSnap.docs.sort((a,b) => (a.data().order||0)-(b.data().order||0)).forEach(d => {
-      topicOpts += `<option value="${d.data().title}">${d.data().title}</option>`;
-    });
-  }
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">🎬 Create Video Playlist</h3>
+  if (!courseId) return toast('Select a course first','error');
+  // Load curriculum lessons, schedule slots, materials for linking
+  const [tSnap, sSnap, mSnap] = await Promise.all([
+    getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'schedule'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'materials'), where('courseId','==',courseId), where('teacherId','==',session.userId)))
+  ]);
+  const lessons = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  const schedSlots = sSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const mats = mSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const lessonOpts = lessons.map(t=>`<option value="${t.id}" data-name="${t.title}">${t.moduleName?t.moduleName+' → ':''}${t.title}</option>`).join('');
+  const schedOpts = schedSlots.map(s=>`<option value="${s.id}">${s.day} – ${s.topic||'Class'} (${s.startTime})</option>`).join('');
+  const matOpts = mats.map(m=>`<option value="${m.id}">${m.title} [${m.type}]</option>`).join('');
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">🎬 Create Video Playlist</h3>
     <div class="space-y-3">
       <div><label class="lbl">Playlist Name *</label><input id="plName" class="inp" placeholder="e.g. Python Basics - Week 1"/></div>
-      <div><label class="lbl">Chapter / Topic</label><select id="plChapter" class="inp">${topicOpts}</select></div>
+      ${lessonOpts?`<div><label class="lbl">📋 Link Curriculum Topic</label><select id="plLinkedLesson" class="inp" onchange="if(this.value){document.getElementById('plChapter').value=this.options[this.selectedIndex].dataset.name||''}"><option value="">— No Link —</option>${lessonOpts}</select></div>`:''}
+      <div><label class="lbl">Chapter Label</label><input id="plChapter" class="inp" placeholder="e.g. Module 1 – Python Basics"/></div>
+      ${schedOpts?`<div><label class="lbl">📅 Link Class Schedule Slot</label><select id="plLinkedSched" class="inp"><option value="">— No Link —</option>${schedOpts}</select></div>`:''}
+      ${matOpts?`<div><label class="lbl">📎 Link Class Material</label><select id="plLinkedMat" class="inp"><option value="">— No Link —</option>${matOpts}</select></div>`:''}
       <div><label class="lbl">Description</label><textarea id="plDesc" class="inp" rows="2" placeholder="What this playlist covers..."></textarea></div>
-      <div><label class="lbl">Order / Position</label><input id="plOrder" class="inp" type="number" min="1" value="1" placeholder="1"/></div>
+      <div><label class="lbl">Order / Position</label><input id="plOrder" class="inp" type="number" min="1" value="1"/></div>
       <div><label class="lbl">Visibility</label>
         <select id="plVisibility" class="inp">
           <option value="published">Published (Students can see)</option>
@@ -3042,12 +3695,18 @@ window.openCreatePlaylist = async () => {
         </select>
       </div>
     </div>
-    <button onclick="savePlaylist(null)" class="btn btn-primary w-full justify-center mt-5">Create Playlist</button>`);
+    <button onclick="savePlaylist(null)" class="btn btn-primary w-full justify-center mt-4">Create Playlist</button>`);
+  // Pre-select active schedule filter
+  const activeSched = document.getElementById('videoSchedFilter')?.value||'';
+  if (activeSched) {
+    const s = document.getElementById('plLinkedSched');
+    if (s) s.value = activeSched;
+  }
 };
 
 window.savePlaylist = async (id) => {
   const name = document.getElementById('plName').value.trim();
-  const chapterName = document.getElementById('plChapter').value;
+  const chapterName = document.getElementById('plChapter')?.value||'';
   const description = document.getElementById('plDesc').value.trim();
   const order = parseInt(document.getElementById('plOrder').value) || 1;
   const visibility = document.getElementById('plVisibility').value;
@@ -3055,7 +3714,17 @@ window.savePlaylist = async (id) => {
   const course = myCourses.find(c => c.id === courseId);
   if (!name) return toast('Playlist name required', 'error');
   if (!courseId) return toast('Select a course first', 'error');
-  const data = {name, chapterName, description, order, visibility, courseId, courseName: course?.name || '', teacherId: session.userId, teacherName: session.name, updatedAt: serverTimestamp()};
+  const linkedLessonSel = document.getElementById('plLinkedLesson');
+  const linkedScheduleSel = document.getElementById('plLinkedSched');
+  const linkedMaterialSel = document.getElementById('plLinkedMat');
+  const data = {
+    name, chapterName, description, order, visibility,
+    linkedLessonId: linkedLessonSel?.value||'',
+    linkedScheduleId: linkedScheduleSel?.value||'',
+    linkedMaterialId: linkedMaterialSel?.value||'',
+    courseId, courseName: course?.name || '',
+    teacherId: session.userId, teacherName: session.name, updatedAt: serverTimestamp()
+  };
   if (id) {
     await updateDoc(doc(db, 'playlists', id), data);
     toast('Playlist updated!', 'success');
@@ -3071,17 +3740,24 @@ window.editPlaylist = async (id) => {
   if (!d.exists()) return;
   const pl = d.data();
   const courseId = pl.courseId;
-  let topicOpts = '<option value="">No Chapter</option>';
-  if (courseId) {
-    const tSnap = await getDocs(query(collection(db, 'topics'), where('courseId', '==', courseId)));
-    tSnap.docs.sort((a,b) => (a.data().order||0)-(b.data().order||0)).forEach(doc => {
-      topicOpts += `<option value="${doc.data().title}" ${pl.chapterName === doc.data().title ? 'selected' : ''}>${doc.data().title}</option>`;
-    });
-  }
-  showModal(`<h3 class="text-lg font-bold text-white mb-5">Edit Playlist</h3>
+  const [tSnap, sSnap, mSnap] = await Promise.all([
+    getDocs(query(collection(db,'curriculumLessons'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'schedule'), where('courseId','==',courseId), where('teacherId','==',session.userId))),
+    getDocs(query(collection(db,'materials'), where('courseId','==',courseId), where('teacherId','==',session.userId)))
+  ]);
+  const lessons = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  const schedSlots = sSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const mats = mSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const lessonOpts = lessons.map(t=>`<option value="${t.id}" data-name="${t.title}" ${pl.linkedLessonId===t.id?'selected':''}>${t.moduleName?t.moduleName+' → ':''}${t.title}</option>`).join('');
+  const schedOpts = schedSlots.map(s=>`<option value="${s.id}" ${pl.linkedScheduleId===s.id?'selected':''}>${s.day} – ${s.topic||'Class'} (${s.startTime})</option>`).join('');
+  const matOpts = mats.map(m=>`<option value="${m.id}" ${pl.linkedMaterialId===m.id?'selected':''}>${m.title} [${m.type}]</option>`).join('');
+  showModal(`<h3 class="text-lg font-bold text-white mb-4">Edit Playlist</h3>
     <div class="space-y-3">
       <div><label class="lbl">Playlist Name</label><input id="plName" class="inp" value="${pl.name}"/></div>
-      <div><label class="lbl">Chapter / Topic</label><select id="plChapter" class="inp">${topicOpts}</select></div>
+      ${lessonOpts?`<div><label class="lbl">📋 Link Curriculum Topic</label><select id="plLinkedLesson" class="inp"><option value="">— No Link —</option>${lessonOpts}</select></div>`:''}
+      <div><label class="lbl">Chapter Label</label><input id="plChapter" class="inp" value="${pl.chapterName||''}"/></div>
+      ${schedOpts?`<div><label class="lbl">📅 Link Schedule Slot</label><select id="plLinkedSched" class="inp"><option value="">— No Link —</option>${schedOpts}</select></div>`:''}
+      ${matOpts?`<div><label class="lbl">📎 Link Material</label><select id="plLinkedMat" class="inp"><option value="">— No Link —</option>${matOpts}</select></div>`:''}
       <div><label class="lbl">Description</label><textarea id="plDesc" class="inp" rows="2">${pl.description||''}</textarea></div>
       <div><label class="lbl">Order</label><input id="plOrder" class="inp" type="number" value="${pl.order||1}"/></div>
       <div><label class="lbl">Visibility</label>
@@ -3091,7 +3767,7 @@ window.editPlaylist = async (id) => {
         </select>
       </div>
     </div>
-    <button onclick="savePlaylist('${id}')" class="btn btn-primary w-full justify-center mt-5">Save Changes</button>`);
+    <button onclick="savePlaylist('${id}')" class="btn btn-primary w-full justify-center mt-4">Save Changes</button>`);
 };
 
 window.deletePlaylist = async (id) => {
@@ -3314,6 +3990,173 @@ document.addEventListener('DOMContentLoaded', () => {
   if (dateEl) dateEl.addEventListener('change', () => { if(currentBatchId) loadBatchAttForm(); });
   if (sessEl) sessEl.addEventListener('change', () => { if(currentBatchId) loadBatchAttForm(); });
 });
+
+// ══════════════════════════════════════════════════════════
+// MARKSHEET GENERATION  (Teacher Panel)
+// ══════════════════════════════════════════════════════════
+
+window.openTeacherMarksheetPanel = () => {
+  const courseId = document.getElementById('resultCourse').value;
+  const studentSel = document.getElementById('resultStudent');
+  const studentId = studentSel.value;
+  if(!courseId){ toast('Select a course first','error'); return; }
+  if(studentId){
+    teacherGenMarksheet(studentId, courseId);
+  } else {
+    const opts = [...studentSel.options].slice(1).map(o=>`<option value="${o.value}">${o.text}</option>`).join('');
+    if(!opts){ toast('No students found','error'); return; }
+    showModal(`<h3 class="text-lg font-display font-bold text-white mb-4">🎓 Generate Marksheet</h3>
+      <div class="space-y-3">
+        <div><label class="lbl">Select Student</label>
+          <select id="msStudentSel" class="inp"><option value="">Select student</option>${opts}</select></div>
+        <div class="flex gap-3">
+          <button onclick="doTeacherMarksheet('${courseId}')" class="btn bp flex-1 justify-center">Generate PDF</button>
+          <button onclick="teacherBulkMarksheets('${courseId}')" class="btn bs flex-1 justify-center">All Students</button>
+        </div>
+      </div>`);
+  }
+};
+
+window.doTeacherMarksheet = (courseId) => {
+  const sid = document.getElementById('msStudentSel')?.value;
+  if(!sid){ toast('Select a student','error'); return; }
+  teacherGenMarksheet(sid, courseId);
+  closeModal();
+};
+
+window.teacherGenMarksheet = async (studentId, courseId) => {
+  if(!studentId||!courseId){ toast('Missing student or course','error'); return; }
+  toast('Generating marksheet...','info');
+  try {
+    const uDoc = await getDoc(doc(db,'users',studentId));
+    const u = uDoc.exists() ? uDoc.data() : {name:studentId,userId:studentId};
+    const courseObj = myCourses.find(c=>c.id===courseId)||{name:'Course'};
+    const tSnap = await getDocs(query(collection(db,'tests'),where('studentId','==',studentId),where('courseId','==',courseId)));
+    const tests = tSnap.docs.map(d=>d.data());
+    const aSnap = await getDocs(query(collection(db,'examAttempts'),where('studentId','==',studentId),where('courseId','==',courseId)));
+    const attempts = aSnap.docs.map(d=>d.data());
+    const attSnap = await getDocs(query(collection(db,'attendance'),where('studentId','==',studentId),where('courseId','==',courseId)));
+    const atts = attSnap.docs.map(d=>d.data());
+    // Rank
+    const rankSnap = await getDocs(query(collection(db,'tests'),where('courseId','==',courseId)));
+    const sMap = {};
+    rankSnap.docs.forEach(d=>{const t=d.data();if(!sMap[t.studentId])sMap[t.studentId]={m:0,mx:0};sMap[t.studentId].m+=t.marks||0;sMap[t.studentId].mx+=t.total||1;});
+    const sorted = Object.keys(sMap).sort((a,b)=>(sMap[b].m/sMap[b].mx)-(sMap[a].m/sMap[a].mx));
+    const rank = sorted.indexOf(studentId)+1;
+    buildMarksheetPDF_T(u, courseObj, tests, attempts, atts, rank, sorted.length);
+  } catch(e){ console.error(e); toast('Error generating marksheet','error'); }
+};
+
+window.teacherBulkMarksheets = async (courseId) => {
+  closeModal();
+  const studentSel = document.getElementById('resultStudent');
+  const students = [...studentSel.options].slice(1);
+  if(!students.length){ toast('No students found','error'); return; }
+  toast(`Generating ${students.length} marksheets...`,'info');
+  const courseObj = myCourses.find(c=>c.id===courseId)||{name:'Course'};
+  for(let i=0;i<students.length;i++){
+    const sid = students[i].value;
+    try {
+      const uDoc = await getDoc(doc(db,'users',sid));
+      const u = uDoc.exists() ? uDoc.data() : {name:sid,userId:sid};
+      const tSnap = await getDocs(query(collection(db,'tests'),where('studentId','==',sid),where('courseId','==',courseId)));
+      const tests = tSnap.docs.map(d=>d.data());
+      const aSnap = await getDocs(query(collection(db,'examAttempts'),where('studentId','==',sid),where('courseId','==',courseId)));
+      const attempts = aSnap.docs.map(d=>d.data());
+      const attSnap = await getDocs(query(collection(db,'attendance'),where('studentId','==',sid),where('courseId','==',courseId)));
+      const atts = attSnap.docs.map(d=>d.data());
+      buildMarksheetPDF_T(u, courseObj, tests, attempts, atts, i+1, students.length, `Marksheet_${u.name||sid}.pdf`);
+      await new Promise(r=>setTimeout(r,500));
+    } catch(e){ console.warn('Skip',sid); }
+  }
+  toast(`${students.length} marksheets generated!`,'success');
+};
+
+function buildMarksheetPDF_T(u, courseObj, tests, attempts, atts, rank, totalStudents, filename) {
+  const {jsPDF} = window.jspdf;
+  const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,H=297;
+  pdf.setFillColor(2,8,23); pdf.rect(0,0,W,H,'F');
+  pdf.setFillColor(15,23,42); pdf.rect(0,0,W,42,'F');
+  pdf.setFillColor(56,189,248); pdf.rect(0,0,W,3,'F');
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(16); pdf.setTextColor(56,189,248);
+  pdf.text('VISION IT COMPUTER INSTITUTE',W/2,14,{align:'center'});
+  pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(100,116,139);
+  pdf.text('Empowering Digital Skills | www.visionit.in',W/2,20,{align:'center'});
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(13); pdf.setTextColor(255,255,255);
+  pdf.text('STUDENT MARKSHEET',W/2,30,{align:'center'});
+  pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(100,116,139);
+  const now=new Date(); pdf.text('Generated: '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),W/2,37,{align:'center'});
+  let y=50;
+  pdf.setFillColor(15,23,42); pdf.setDrawColor(56,189,248,0.3); pdf.setLineWidth(0.3);
+  pdf.roundedRect(10,y,W-20,32,2,2,'FD');
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(56,189,248);
+  pdf.text('STUDENT INFORMATION',14,y+7);
+  pdf.setDrawColor(56,189,248); pdf.line(14,y+9,80,y+9);
+  const infoY=y+16;
+  pdf.setFontSize(8); pdf.setFont('helvetica','bold'); pdf.setTextColor(100,116,139);
+  pdf.text('NAME',14,infoY); pdf.text('STUDENT ID',80,infoY); pdf.text('COURSE',130,infoY);
+  pdf.setFont('helvetica','normal'); pdf.setTextColor(226,232,240);
+  pdf.text((u.name||'-').substring(0,22),14,infoY+6); pdf.text(u.userId||'-',80,infoY+6); pdf.text((courseObj.name||'-').substring(0,20),130,infoY+6);
+  const infoY2=infoY+14;
+  pdf.setFont('helvetica','bold'); pdf.setTextColor(100,116,139);
+  pdf.text('GUARDIAN',14,infoY2); pdf.text('DOB',80,infoY2); pdf.text('SESSION',130,infoY2);
+  pdf.setFont('helvetica','normal'); pdf.setTextColor(226,232,240);
+  pdf.text((u.guardianName||u.fatherName||'-').substring(0,22),14,infoY2+6);
+  pdf.text(u.dob||'-',80,infoY2+6); pdf.text(courseObj.duration||now.getFullYear().toString(),130,infoY2+6);
+  y=92;
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(56,189,248);
+  pdf.text('EXAMINATION RESULTS',14,y); y+=5;
+  pdf.setDrawColor(56,189,248); pdf.line(14,y,W-14,y); y+=4;
+  pdf.setFillColor(15,23,42); pdf.rect(10,y,W-20,8,'F');
+  pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5); pdf.setTextColor(56,189,248);
+  pdf.text('EXAM TYPE',14,y+5.5); pdf.text('SUBJECT / TITLE',54,y+5.5); pdf.text('MARKS',120,y+5.5,{align:'right'}); pdf.text('MAX',138,y+5.5,{align:'right'}); pdf.text('%',154,y+5.5,{align:'right'}); pdf.text('GRADE',175,y+5.5,{align:'right'});
+  y+=10;
+  const getGrade=p=>p>=90?'A+':p>=80?'A':p>=70?'B+':p>=60?'B':p>=50?'C':'F';
+  const gc=g=>g==='A+'||g==='A'?[110,231,183]:g==='B+'||g==='B'?[129,140,248]:g==='C'?[251,191,36]:[248,113,113];
+  const sections=[
+    {label:'Daily Tests',items:tests.filter(t=>t.type==='daily').map(t=>({title:t.subject||'Daily Test',marks:t.marks||0,total:t.total||10}))},
+    {label:'Monthly Tests',items:tests.filter(t=>t.type==='monthly').map(t=>({title:t.subject||'Monthly Test',marks:t.marks||0,total:t.total||50}))},
+    {label:'Final Exam',items:tests.filter(t=>t.type==='final').map(t=>({title:t.subject||'Final Exam',marks:t.marks||0,total:t.total||100}))},
+    {label:'Online Exams',items:attempts.map(a=>({title:a.examTitle||'Online Exam',marks:a.score||0,total:a.total||10}))},
+  ].filter(s=>s.items.length>0);
+  let gm=0,gmx=0;
+  const allRows=[];
+  sections.forEach(sec=>{
+    allRows.push({isHeader:true,label:sec.label});
+    sec.items.forEach(item=>{allRows.push({...item,type:sec.label});gm+=item.marks;gmx+=item.total;});
+    const sm=sec.items.reduce((s,i)=>s+i.marks,0),smx=sec.items.reduce((s,i)=>s+i.total,0);
+    allRows.push({isSubtotal:true,label:sec.label+' Average',marks:sm,total:smx,pct:smx?(sm/smx*100).toFixed(1):0});
+  });
+  allRows.forEach((row,idx)=>{
+    if(y>270){pdf.addPage();pdf.setFillColor(2,8,23);pdf.rect(0,0,W,H,'F');y=20;}
+    if(row.isHeader){pdf.setFillColor(20,30,50);pdf.rect(10,y-3,W-20,7,'F');pdf.setFont('helvetica','bold');pdf.setFontSize(7.5);pdf.setTextColor(129,140,248);pdf.text('▸ '+row.label,14,y+1);y+=6;}
+    else if(row.isSubtotal){pdf.setFillColor(15,23,42);pdf.rect(10,y-3,W-20,7.5,'F');pdf.setFont('helvetica','bold');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('Subtotal',14,y+1);pdf.text(row.marks.toString(),120,y+1,{align:'right'});pdf.text(row.total.toString(),138,y+1,{align:'right'});const g=getGrade(parseFloat(row.pct));const[r2,g2,b2]=gc(g);pdf.setTextColor(r2,g2,b2);pdf.text(row.pct+'%',154,y+1,{align:'right'});pdf.text(g,175,y+1,{align:'right'});y+=8;}
+    else{if(idx%2===0){pdf.setFillColor(8,15,30);pdf.rect(10,y-3.5,W-20,7,'F');}pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(226,232,240);pdf.text(row.type.substring(0,14),14,y+0.5);pdf.text((row.title||'-').substring(0,28),54,y+0.5);pdf.text(row.marks.toString(),120,y+0.5,{align:'right'});pdf.text(row.total.toString(),138,y+0.5,{align:'right'});const p=row.total?(row.marks/row.total*100).toFixed(1):0;const g2=getGrade(parseFloat(p));const[r3,g3,b3]=gc(g2);pdf.setTextColor(r3,g3,b3);pdf.text(p+'%',154,y+0.5,{align:'right'});pdf.text(g2,175,y+0.5,{align:'right'});y+=7;}
+  });
+  y+=2;
+  const gp=gmx?(gm/gmx*100).toFixed(1):0,gg=getGrade(parseFloat(gp));
+  pdf.setFillColor(15,30,45);pdf.setDrawColor(56,189,248);pdf.setLineWidth(0.3);pdf.roundedRect(10,y,W-20,11,1,1,'FD');
+  pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(56,189,248);pdf.text('GRAND TOTAL',14,y+7);
+  pdf.setTextColor(226,232,240);pdf.text(gm.toString(),120,y+7,{align:'right'});pdf.text(gmx.toString(),138,y+7,{align:'right'});
+  const[rg2,gg2,bg2]=gc(gg);pdf.setTextColor(rg2,gg2,bg2);pdf.text(gp+'%',154,y+7,{align:'right'});pdf.setFontSize(11);pdf.text(gg,175,y+7,{align:'right'});
+  y+=18;
+  const present=atts.filter(a=>a.status==='present').length,attPct=atts.length?(present/atts.length*100).toFixed(1):0;
+  const attC=parseFloat(attPct)>=75?[110,231,183]:[248,113,113];
+  pdf.setFillColor(15,23,42);pdf.setDrawColor(50,60,90);pdf.setLineWidth(0.3);
+  pdf.roundedRect(10,y,58,24,2,2,'FD');pdf.setFont('helvetica','bold');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('ATTENDANCE',15,y+7);pdf.setFontSize(14);pdf.setTextColor(...attC);pdf.text(attPct+'%',39,y+17,{align:'center'});pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text(`${present}/${atts.length} days`,39,y+22,{align:'center'});
+  pdf.setFillColor(15,23,42);pdf.roundedRect(72,y,58,24,2,2,'FD');pdf.setFont('helvetica','bold');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('CLASS RANK',77,y+7);pdf.setFontSize(14);pdf.setTextColor(129,140,248);pdf.text(rank?'#'+rank:'-',101,y+17,{align:'center'});pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('out of '+(totalStudents||'-')+' students',101,y+22,{align:'center'});
+  pdf.setFillColor(15,23,42);pdf.roundedRect(134,y,66,24,2,2,'FD');pdf.setFont('helvetica','bold');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('OVERALL GRADE',139,y+7);pdf.setFontSize(18);pdf.setTextColor(rg2,gg2,bg2);pdf.text(gg,167,y+18,{align:'center'});pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text(gp+'% overall',167,y+23,{align:'center'});
+  y+=32;
+  pdf.setFont('helvetica','bold');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('GRADING SCALE:',14,y+3);
+  [['A+','90-100%'],['A','80-89%'],['B+','70-79%'],['B','60-69%'],['C','50-59%'],['F','<50%']].forEach(([g,r],i)=>{const c=[[110,231,183],[110,231,183],[129,140,248],[129,140,248],[251,191,36],[248,113,113]][i];pdf.setTextColor(...c);pdf.setFont('helvetica','bold');pdf.text(g,55+i*25,y+3);pdf.setTextColor(100,116,139);pdf.setFont('helvetica','normal');pdf.text(r,55+i*25+5,y+3);});
+  pdf.setDrawColor(50,60,90);pdf.setLineWidth(0.3);pdf.line(14,H-30,60,H-30);pdf.line(80,H-30,126,H-30);pdf.line(148,H-30,196,H-30);
+  pdf.setFont('helvetica','normal');pdf.setFontSize(7);pdf.setTextColor(100,116,139);pdf.text('Student Signature',14,H-24);pdf.text('Teacher Signature',80,H-24);pdf.text('Principal Signature',148,H-24);
+  pdf.setFillColor(15,23,42);pdf.rect(0,H-14,W,14,'F');pdf.setDrawColor(56,189,248);pdf.setLineWidth(0.3);pdf.line(0,H-14,W,H-14);
+  pdf.setFont('helvetica','normal');pdf.setFontSize(6.5);pdf.setTextColor(100,116,139);pdf.text('This is a computer-generated marksheet. | Vision IT Computer Institute | VIMS v2.0',W/2,H-7,{align:'center'});
+  pdf.save(filename||`Marksheet_${u.name||u.userId}_${courseObj.name||'Course'}.pdf`);
+  toast('Marksheet downloaded!','success');
+}
 
 initApp();
 })();
