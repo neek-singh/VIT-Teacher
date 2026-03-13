@@ -932,9 +932,9 @@ function draftScheduleHTML(idPrefix='ds') {
   <div class="p-3 rounded-xl space-y-2" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2)">
     <p class="text-indigo-400 text-xs font-semibold tracking-wide">📅 PUBLISH SETTINGS</p>
     <div class="flex rounded-xl overflow-hidden border border-slate-700" id="${idPrefix}Tabs">
-      <button type="button" onclick="setDraftMode('${idPrefix}','now')" id="${idPrefix}BtnNow" class="flex-1 py-2 text-xs font-semibold transition-colors" style="background:rgba(16,185,129,0.18);color:#10b981">⚡ Publish Now</button>
-      <button type="button" onclick="setDraftMode('${idPrefix}','schedule')" id="${idPrefix}BtnSchedule" class="flex-1 py-2 text-xs font-semibold text-slate-500 transition-colors">🕐 Schedule</button>
-      <button type="button" onclick="setDraftMode('${idPrefix}','draft')" id="${idPrefix}BtnDraft" class="flex-1 py-2 text-xs font-semibold text-slate-500 transition-colors">📝 Draft</button>
+      <button type="button" onclick="setDraftMode('${idPrefix}','now')" id="${idPrefix}BtnNow" data-mode="now" data-active="true" class="flex-1 py-2 text-xs font-semibold transition-colors" style="background:rgba(16,185,129,0.18);color:#10b981">⚡ Publish Now</button>
+      <button type="button" onclick="setDraftMode('${idPrefix}','schedule')" id="${idPrefix}BtnSchedule" data-mode="schedule" data-active="false" class="flex-1 py-2 text-xs font-semibold transition-colors text-slate-500">🕐 Schedule</button>
+      <button type="button" onclick="setDraftMode('${idPrefix}','draft')" id="${idPrefix}BtnDraft" data-mode="draft" data-active="false" class="flex-1 py-2 text-xs font-semibold transition-colors text-slate-500">📝 Draft</button>
     </div>
     <div id="${idPrefix}ScheduleRow" class="hidden">
       <label class="lbl">Publish Date & Time</label>
@@ -947,36 +947,43 @@ function draftScheduleHTML(idPrefix='ds') {
   </div>`;
 }
 
-function setDraftMode(idPrefix, mode) {
-  const btns = {now:`${idPrefix}BtnNow`, schedule:`${idPrefix}BtnSchedule`, draft:`${idPrefix}BtnDraft`};
-  Object.entries(btns).forEach(([k,id]) => {
-    const el = document.getElementById(id); if(!el) return;
-    const isActive = k===mode;
-    const colors = {now:'rgba(16,185,129,0.18)',schedule:'rgba(99,102,241,0.18)',draft:'rgba(251,191,36,0.18)'};
-    const textColors = {now:'#10b981',schedule:'#818cf8',draft:'#fbbf24'};
-    el.style.background = isActive ? colors[k] : '';
-    el.style.color = isActive ? textColors[k] : '';
-    el.className = `flex-1 py-2 text-xs font-semibold transition-colors${isActive?'':' text-slate-500'}`;
+window.setDraftMode = function(idPrefix, mode) {
+  const modeStyles = {
+    now:      { bg:'rgba(16,185,129,0.18)',  color:'#10b981' },
+    schedule: { bg:'rgba(99,102,241,0.18)',  color:'#818cf8' },
+    draft:    { bg:'rgba(251,191,36,0.18)',  color:'#fbbf24' }
+  };
+  ['now','schedule','draft'].forEach(m => {
+    const el = document.getElementById(`${idPrefix}Btn${m.charAt(0).toUpperCase()+m.slice(1)}`);
+    if (!el) return;
+    const isActive = m === mode;
+    el.dataset.active = isActive ? 'true' : 'false';
+    el.style.background = isActive ? modeStyles[m].bg : '';
+    el.style.color      = isActive ? modeStyles[m].color : '';
+    el.style.fontWeight = isActive ? '700' : '';
   });
   const schedRow = document.getElementById(`${idPrefix}ScheduleRow`);
   const draftRow = document.getElementById(`${idPrefix}DraftRow`);
-  if(schedRow) schedRow.classList.toggle('hidden', mode!=='schedule');
-  if(draftRow) draftRow.classList.toggle('hidden', mode!=='draft');
+  if (schedRow) schedRow.classList.toggle('hidden', mode !== 'schedule');
+  if (draftRow) draftRow.classList.toggle('hidden', mode !== 'draft');
 }
 
 function getDraftSettings(idPrefix='ds') {
-  const nowBtn = document.getElementById(`${idPrefix}BtnNow`);
-  const schedBtn = document.getElementById(`${idPrefix}BtnSchedule`);
-  const draftBtn = document.getElementById(`${idPrefix}BtnDraft`);
-  const isDraftActive = draftBtn?.style.color === 'rgb(251, 191, 36)' || draftBtn?.style.color === '#fbbf24';
-  const isSchedActive = schedBtn?.style.color === 'rgb(129, 140, 248)' || schedBtn?.style.color === '#818cf8';
-  if(isDraftActive) return { isDraft: true, publishAt: null, isActive: false };
-  if(isSchedActive) {
+  // Use data-active attribute — reliable across all browsers
+  const nowActive   = document.getElementById(`${idPrefix}BtnNow`)?.dataset.active === 'true';
+  const schedActive = document.getElementById(`${idPrefix}BtnSchedule`)?.dataset.active === 'true';
+  const draftActive = document.getElementById(`${idPrefix}BtnDraft`)?.dataset.active === 'true';
+
+  if (draftActive) return { isDraft: true, publishAt: null, isActive: false };
+
+  if (schedActive) {
     const val = document.getElementById(`${idPrefix}PublishAt`)?.value;
     const publishAt = val ? new Date(val) : null;
     const now = new Date();
     return { isDraft: false, publishAt, isActive: publishAt ? publishAt <= now : true };
   }
+
+  // Default: Publish Now (nowActive or nothing selected)
   return { isDraft: false, publishAt: null, isActive: true };
 }
 
