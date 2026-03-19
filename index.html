@@ -121,6 +121,14 @@
   .progress-ring-wrap svg{transform:rotate(-90deg);}
   .progress-ring-bg{fill:none;stroke:rgba(56,189,248,0.12);stroke-width:4;}
   .progress-ring-fill{fill:none;stroke:#38bdf8;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 0.6s ease;}
+
+  /* Phase 4: Loading states */
+  @keyframes skp{from{opacity:1}to{opacity:.35}}
+  .btn-loading{opacity:.6;cursor:not-allowed;pointer-events:none}
+  .skeleton-row{padding:12px;border:0.5px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:8px;animation:skp 1.5s ease-in-out infinite alternate}
+  .skeleton-line{background:rgba(255,255,255,0.06);border-radius:4px;margin-bottom:6px}
+  .skeleton-line.short{width:40%;height:9px}
+  .skeleton-line.long{width:65%;height:11px}
 </style>
 </head>
 <body>
@@ -465,7 +473,7 @@
               <div class="flex items-center justify-between mb-3">
                 <h4 class="text-sm font-semibold text-white">Enrolled Students</h4>
                 <div class="flex gap-2">
-                  <input id="batchStudentSearch" class="inp text-xs" placeholder="Search student..." style="max-width:200px" oninput="filterBatchStudents()"/>
+                  <input id="batchStudentSearch" class="inp text-xs" placeholder="Search student..." style="max-width:200px" oninput="_d_filterBatchStudents()"/>
                   <button onclick="openAddStudentToBatch()" class="btn btn-primary text-xs">+ Add Student</button>
                 </div>
               </div>
@@ -513,7 +521,7 @@
       <!-- COURSES -->
       <div id="sec-courses" class="section">
         <div class="flex flex-wrap gap-2 mb-4">
-          <input id="tCourseSearch" oninput="filterTeacherCourses()" class="inp flex-1" style="min-width:140px" placeholder="🔍 Search courses..."/>
+          <input id="tCourseSearch" oninput="_d_filterTeacherCourses()" class="inp flex-1" style="min-width:140px" placeholder="🔍 Search courses..."/>
           <select id="tCourseCatFilter" class="inp w-auto text-xs" onchange="filterTeacherCourses()">
             <option value="">📂 All Categories</option>
           </select>
@@ -805,7 +813,7 @@
 <script>
 (async () => {
 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-const { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+const { getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp, deleteField, writeBatch, runTransaction, limit, startAfter, increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
 const { getStorage, ref: storageRef, uploadBytes, getDownloadURL, deleteObject } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
 
 const firebaseConfig = {
@@ -820,6 +828,135 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig, "VisionTeacherApp");
 const db = getFirestore(app);
+
+// ═══════════════════════════════════════════════════════
+//  VIMS PRODUCTION UTILITIES — Phase 1-3 Implementation
+// ═══════════════════════════════════════════════════════
+
+// ── GLOBAL ERROR HANDLER ──────────────────────────────
+window.addEventListener('unhandledrejection', event => {
+  event.preventDefault();
+  const msg = event.reason?.message || '';
+  const code = event.reason?.code || '';
+  if (code === 'auth/network-request-failed' || msg.includes('offline'))
+    return toast('No internet connection. Please try again.','error');
+  if (code === 'failed-precondition' || msg.includes('requires an index'))
+    return toast('Database index missing. Contact admin.','error');
+  if (code === 'permission-denied')
+    return toast('Access denied. Please re-login.','error');
+  toast('An error occurred. Please try again.','error');
+  console.error('[VIMS] Unhandled:', event.reason);
+  document.querySelectorAll('button[data-loading="true"]').forEach(btn => {
+    btn.disabled=false; btn.dataset.loading='false';
+    if (btn.dataset.origText) btn.textContent=btn.dataset.origText;
+  });
+});
+
+// ── UNIVERSAL DATE HELPER ─────────────────────────────
+function toDate(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  if (typeof val.toDate === 'function') return val.toDate();
+  if (val?.seconds) return new Date(val.seconds * 1000);
+  return new Date(val);
+}
+function todayMidnight() { const d=new Date(); d.setHours(0,0,0,0); return d; }
+function isExpiredDate(val) { const d=toDate(val); return d ? d < todayMidnight() : false; }
+function daysLeftFromNow(val) { const d=toDate(val); return d ? Math.ceil((d-new Date())/86400000) : Infinity; }
+
+// ── BUTTON GUARD ─────────────────────────────────────
+function withGuard(btnId, asyncFn) {
+  return async (...args) => {
+    const btn = document.getElementById(btnId);
+    if (btn?.dataset.loading === 'true') return;
+    if (btn) { btn.dataset.loading='true'; btn.dataset.origText=btn.textContent||''; btn.disabled=true; btn.textContent='⏳ Please wait...'; }
+    try { return await asyncFn(...args); }
+    catch(e) { console.error('[Guard]', e); toast('Operation failed: '+(e.message||'Try again'),'error'); }
+    finally { if(btn) { btn.disabled=false; btn.dataset.loading='false'; if(btn.dataset.origText) btn.textContent=btn.dataset.origText; } }
+  };
+}
+
+// ── PASSWORD SECURITY ────────────────────────────────
+async function hashPassword(pw) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf), b=>b.toString(16).padStart(2,'0')).join('');
+}
+function generateSecurePassword(len=10) {
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$';
+  return 'VIT@'+Array.from(crypto.getRandomValues(new Uint8Array(len)), b=>chars[b%chars.length]).join('');
+}
+
+// ── LOGIN RATE LIMITER ────────────────────────────────
+const _loginLimiter = { count:0, lockedUntil:0 };
+function checkRateLimit() {
+  if (Date.now() < _loginLimiter.lockedUntil) {
+    toast('Too many attempts. Wait '+Math.ceil((_loginLimiter.lockedUntil-Date.now())/1000)+' secs.','error');
+    return false;
+  }
+  return true;
+}
+function recordFailedAttempt() {
+  _loginLimiter.count++;
+  if (_loginLimiter.count >= 5) {
+    _loginLimiter.lockedUntil = Date.now()+60000; _loginLimiter.count=0;
+  } else {
+    toast('Wrong credentials. '+(5-_loginLimiter.count)+' attempts left.','error');
+  }
+}
+
+// ── IN-MEMORY CACHE ──────────────────────────────────
+const _cache = new Map();
+async function cachedGet(key, fetchFn, ttlMs=300000) {
+  const hit=_cache.get(key);
+  if (hit && Date.now()-hit.ts<ttlMs) return hit.data;
+  const data=await fetchFn(); _cache.set(key,{data,ts:Date.now()}); return data;
+}
+function invalidateCache(...keys) { keys.forEach(k=>_cache.delete(k)); }
+
+// ── SKELETON LOADER ───────────────────────────────────
+function showSkeleton(id, n=3) {
+  const el=document.getElementById(id); if(!el) return;
+  el.innerHTML=Array(n).fill(0).map((_,i)=>`<div style="padding:12px;border:0.5px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:8px;animation:skp 1.5s ${i*0.15}s ease-in-out infinite alternate"><div style="height:11px;background:rgba(255,255,255,0.06);border-radius:4px;width:65%;margin-bottom:6px"></div><div style="height:9px;background:rgba(255,255,255,0.04);border-radius:4px;width:40%"></div></div>`).join('');
+}
+
+// ── FORM VALIDATION HELPER ───────────────────────────────
+function validateForm(rules) {
+  for (const [id, label, opts={}] of rules) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const val = (el.value||'').trim();
+    if (opts.required !== false && !val) {
+      el.focus();
+      el.style.borderColor = 'rgba(239,68,68,0.6)';
+      setTimeout(() => el.style.borderColor = '', 2000);
+      toast(`${label} is required`,'error');
+      return false;
+    }
+    if (opts.minLength && val.length < opts.minLength) {
+      el.focus();
+      toast(`${label} must be at least ${opts.minLength} characters`,'error');
+      return false;
+    }
+    if (opts.email && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      el.focus();
+      toast(`${label}: enter a valid email address`,'error');
+      return false;
+    }
+    if (opts.phone && val && !/^\d{10}$/.test(val.replace(/\s/g,''))) {
+      el.focus();
+      toast(`${label}: enter a valid 10-digit phone number`,'error');
+      return false;
+    }
+    if (opts.min !== undefined && parseFloat(val) < opts.min) {
+      el.focus();
+      toast(`${label} must be at least ${opts.min}`,'error');
+      return false;
+    }
+  }
+  return true;
+}
+
+
 const storage = getStorage(app);
 
 let session = null;
@@ -849,26 +986,50 @@ async function initApp() {
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════
+// TEACHER — Phase 1: Secure Auth Implementation
+// ═══════════════════════════════════════════
+
 window.handleLogin = async () => {
-  const userId = document.getElementById('loginId').value.trim();
+  if (!checkRateLimit()) return;
+  const userId   = document.getElementById('loginId').value.trim();
   const password = document.getElementById('loginPass').value;
   if (!userId || !password) return toast('Enter your credentials','error');
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Signing in...';
+  btn.disabled=true; btn.dataset.origText=btn.textContent; btn.textContent='Signing in...';
   try {
     const ud = await getDoc(doc(db,'users',userId));
-    if (!ud.exists()) { toast('User not found','error'); return; }
+    if (!ud.exists()) { recordFailedAttempt(); return; }
     const data = ud.data();
-    if (data.password !== password) { toast('Wrong password','error'); return; }
-    if (!data.isActive) { toast('Account disabled. Contact admin.','error'); return; }
-    if (data.role !== 'teacher') { toast('Not a teacher account','error'); return; }
-    session = { userId, name:data.name, role:'teacher', profileImage:data.profileImage||'' };
+    const inputHash  = await hashPassword(password);
+    const storedHash = data.passwordHash || null;
+    const match = storedHash ? inputHash===storedHash : data.password===password;
+    if (!match) { recordFailedAttempt(); return; }
+    if (!data.isActive) return toast('Account disabled. Contact admin.','error');
+    if (data.role !== 'teacher') return toast('Not a teacher account.','error');
+    if (!storedHash && data.password) {
+      await updateDoc(doc(db,'users',userId), {passwordHash:inputHash, password:deleteField()});
+    }
+    _loginLimiter.count = 0;
+    session = {userId, name:data.name, role:'teacher', profileImage:data.profileImage||''};
     localStorage.setItem('vims_teacher_session', JSON.stringify(session));
-    toast('Welcome, ' + data.name + '!','success');
     showApp();
-  } catch(e) { toast('Error: ' + e.message,'error'); }
-  finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+  } catch(e) { toast('Login failed. Check connection.','error'); console.error(e); }
+  finally { btn.disabled=false; btn.textContent=btn.dataset.origText||'Sign In'; }
 };
+
+window.logout = () => {
+  if (!confirm('Logout?')) return;
+  localStorage.removeItem('vims_teacher_session');
+  if (notifUnsub) { notifUnsub(); notifUnsub=null; }
+  if (hwUnsub)    { hwUnsub(); hwUnsub=null; }
+  session = null;
+  location.reload();
+};
+
+// ── END PHASE1 AUTH ──
+
 
 // ── SHOW APP ──────────────────────────────────────────────────
 function showApp() {
@@ -886,13 +1047,7 @@ function showApp() {
   loadTodayClasses();
 }
 
-window.logout = () => {
-  if (!confirm('Logout?')) return;
-  localStorage.removeItem('vims_teacher_session');
-  if (notifUnsub) notifUnsub();
-  if (hwUnsub) hwUnsub();
-  location.reload();
-};
+
 
 window.toggleSidebar = () => {
   const sb = document.getElementById('sidebar');
@@ -1048,7 +1203,7 @@ window.uploadPhoto = async (input) => {
 async function loadMyCourses() {
   const snap = await getDocs(query(collection(db,'courses'), where('teacherId','==',session.userId)));
   myCourses = snap.docs.map(d => ({id:d.id,...d.data()}));
-  const enrollSnap = await getDocs(collection(db,'enrollments'));
+  const enrollSnap = await getDocs(query(collection(db,'enrollments'),where('teacherId','==',session.userId),limit(500)));
   const allEn = enrollSnap.docs.map(d => d.data());
   myStudents = [];
   myCourses.forEach(c => {
@@ -1230,7 +1385,7 @@ async function renderCourseProgress() {
   const progressData = await Promise.all(myCourses.map(async c => {
     const [unitsSnap,hwSnap] = await Promise.all([
       getDocs(query(collection(db,'curriculumUnits'), where('courseId','==',c.id))),
-      getDocs(query(collection(db,'homeworks'), where('courseId','==',c.id), where('teacherId','==',session.userId)))
+      getDocs(query(collection(db,'homeworks'), where('courseId','==',c.id), where('teacherId','==',session.userId), limit(100)))
     ]);
     return { name:c.name, students:c.studentCount||0, units:unitsSnap.size, hws:hwSnap.size, status:getCourseStatus(c) };
   }));
@@ -1431,14 +1586,31 @@ window.saveAttendance = async () => {
   const students = JSON.parse(container.dataset.students||'[]');
   if (!students.length) return toast('No students to mark','error');
   const course = myCourses.find(c => c.id === courseId);
-  const ex = await getDocs(query(collection(db,'attendance'), where('courseId','==',courseId), where('date','==',date)));
-  for (const d of ex.docs) await deleteDoc(d.ref);
-  for (const s of students) {
-    await addDoc(collection(db,'attendance'), {courseId, courseName:course?.name||'', date, studentId:s.studentId, studentName:s.studentName||s.studentId, status:attStatus[s.studentId]||'absent', teacherId:session.userId, createdAt:serverTimestamp()});
+  const saveBtn = document.querySelector('[onclick="saveAttendance()"]');
+  if (saveBtn) { saveBtn.disabled=true; saveBtn.dataset.origText=saveBtn.textContent; saveBtn.textContent='Saving...'; }
+  try {
+    const ex = await getDocs(query(collection(db,'attendance'),
+      where('courseId','==',courseId), where('date','==',date)));
+    const batch = writeBatch(db);
+    ex.docs.forEach(d => batch.delete(d.ref));
+    students.forEach(s => {
+      batch.set(doc(collection(db,'attendance')), {
+        courseId, courseName: course?.name||'', date,
+        studentId: s.studentId, studentName: s.studentName||s.studentId||'',
+        status: s.status||'present', teacherId: session.userId,
+        teacherName: session.name, createdAt: serverTimestamp()
+      });
+    });
+    await batch.commit();
+    toast('Attendance saved for '+students.length+' students!','success');
+  } catch(e) {
+    console.error('saveAttendance error:', e);
+    toast('Save failed: '+(e.message||'Check connection'),'error');
+  } finally {
+    if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent=saveBtn.dataset.origText||'Save Attendance'; }
   }
-  toast('Attendance saved for ' + students.length + ' students!','success');
-  Object.keys(attStatus).forEach(k => delete attStatus[k]);
 };
+
 
 window.loadAttReport = async () => {
   const courseId = document.getElementById('attReportCourse').value;
@@ -1471,7 +1643,7 @@ function populateTestFilter(selId) {
 window.loadTests = async (type) => {
   const bodyId = {daily:'dailyTestBody',monthly:'monthlyTestBody',final:'finalTestBody'}[type];
   const courseFilter = type==='daily' ? document.getElementById('dtCourse')?.value : '';
-  let q = query(collection(db,'tests'), where('teacherId','==',session.userId), where('type','==',type));
+  let q = query(collection(db,'tests'), where('teacherId','==',session.userId), where('type','==',type), orderBy('date','desc'), limit(200));
   const snap = await getDocs(q);
   let tests = snap.docs.map(d => ({id:d.id,...d.data()}));
   if (courseFilter) tests = tests.filter(t => t.courseId === courseFilter);
@@ -1533,6 +1705,9 @@ window.saveTest = async (type) => {
   const courseName = courseEl.options[courseEl.selectedIndex].text;
   const studentName = studentEl.options[studentEl.selectedIndex]?.dataset.name || studentEl.value;
   const remarks = document.getElementById('tRemarks')?.value||'';
+  const saveBtn = document.querySelector('[onclick*="saveTest"]');
+  if (saveBtn) { saveBtn.disabled=true; saveBtn.dataset.origText=saveBtn.textContent||'Save'; saveBtn.textContent='Saving...'; }
+  try {
   const ds = getDraftSettings('test');
   await addDoc(collection(db,'tests'), {type,subject,marks,total,date,courseName,courseId:courseEl.value,studentId:studentEl.value,studentName,teacherId:session.userId,teacherName:session.name,remarks,isDraft:ds.isDraft,publishAt:ds.publishAt||null,isActive:ds.isActive,createdAt:serverTimestamp()});
   if (type==='final' && !ds.isDraft) {
@@ -1540,7 +1715,14 @@ window.saveTest = async (type) => {
   }
   const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled)` : '';
   toast('Saved!'+statusMsg,'success'); closeModal(); loadTests(type);
-};
+  } catch(e) {
+    console.error('saveTest:', e);
+    toast('Save failed: '+(e.message||'Try again'),'error');
+  } finally {
+    const sb = document.querySelector('[onclick*="saveTest"]');
+    if (sb) { sb.disabled=false; sb.textContent=sb.dataset.origText||'Save'; }
+  }
+};;
 
 window.editTest = async (id, type) => {
   const d = await getDoc(doc(db,'tests',id)); if (!d.exists()) return;
@@ -1859,7 +2041,7 @@ window.loadIssuedCerts = async () => {
 };
 
 window.previewCert = async (certId) => {
-  const certSnap = await getDocs(collection(db,'certificates'));
+  const certSnap = await getDocs(query(collection(db,'certificates'),where('teacherId','==',session.userId),limit(200)));
   const cert = certSnap.docs.find(d=>d.id===certId)?.data();
   if (!cert) return toast('Certificate not found','error');
   generateCertPDF(cert);
@@ -2325,7 +2507,7 @@ window.openAddMaterial = async () => {
       </div>
       <div><label class="lbl">Description</label><textarea id="matDesc" class="inp" rows="2" placeholder="Brief description..."></textarea></div>
       \${draftScheduleHTML('mat')}
-      <button onclick="saveMaterial()" class="btn btn-primary w-full justify-center mt-2" id="matSaveBtn">💾 Save Material</button>
+      <button onclick="saveMaterial()" class="btn btn-primary w-full justify-center mt-2" id="matSaveBtn" data-loading="false">💾 Save Material</button>
     </div>`);
   // Show/hide url vs file based on type selection
   document.getElementById('matTypeGrid').addEventListener('change', () => {
@@ -2711,6 +2893,7 @@ window.saveHomework = async () => {
   const statusMsg = ds.isDraft ? ' (Draft)' : ds.publishAt ? ` (Scheduled: ${ds.publishAt.toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'})})` : '';
   toast('Homework created — '+msg+statusMsg,'success');
   closeModal(); loadHomeworks();
+  invalidateCache('homeworks');
 };
 
 window.editHomework = async (id) => {
@@ -4270,6 +4453,12 @@ function buildMarksheetPDF_T(u, courseObj, tests, attempts, atts, rank, totalStu
   pdf.save(filename||`Marksheet_${u.name||u.userId}_${courseObj.name||'Course'}.pdf`);
   toast('Marksheet downloaded!','success');
 }
+
+
+// Phase 5: Debounced search handlers
+const _debounce=(fn,ms=300)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+const _d_filterBatchStudents = _debounce(filterBatchStudents, 300);
+const _d_filterTeacherCourses = _debounce(filterTeacherCourses, 300);
 
 initApp();
 })();
